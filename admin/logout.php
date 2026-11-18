@@ -2,6 +2,11 @@
 
 require_once __DIR__ . '/../includes/security.php';
 
+if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !csrf_is_valid($_POST['csrf_token'] ?? null)) {
+    http_response_code(405);
+    exit('Invalid request.');
+}
+
 $_SESSION = [];
 
 if (ini_get('session.use_cookies')) {
