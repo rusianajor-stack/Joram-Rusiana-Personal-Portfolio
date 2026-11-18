@@ -43,7 +43,7 @@ $token = csrf_token();
             <h1>Dashboard</h1>
             <p>Welcome back. Here is a summary of your portfolio content.</p>
         </div>
-        <a class="admin-button" href="../index.html" target="_blank" rel="noopener noreferrer">View website</a>
+        <a class="admin-button" href="../index.php" target="_blank" rel="noopener noreferrer">View website</a>
     </div>
     <section class="admin-stats" aria-label="Portfolio statistics">
         <?php foreach ($counts as $label => $count): ?>

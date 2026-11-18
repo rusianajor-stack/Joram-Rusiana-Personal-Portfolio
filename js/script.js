@@ -1,13 +1,6 @@
 /* =========================================
    Joram Rusiana — Personal Portfolio
    script.js
-
-   Features:
-   1. Mobile navigation toggle
-   2. Contact form validation
-   3. Dark / light mode + localStorage
-   4. Scroll-to-top button
-   5. Typing effect on the Home page
    ========================================= */
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -20,9 +13,10 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 function highlightActiveNavLink() {
-  var currentPage = window.location.pathname.split("/").pop() || "index.html";
+  var currentPage = window.location.pathname.split("/").pop() || "index.php";
   document.querySelectorAll(".nav-link").forEach(function (link) {
-    if (link.getAttribute("href") === currentPage) link.classList.add("active");
+    var href = link.getAttribute("href") || "";
+    if (href.replace(/^\.\//, "") === currentPage) link.classList.add("active");
   });
 }
 
@@ -108,39 +102,11 @@ function setUpContactForm() {
   var form = document.getElementById("contact-form");
   if (!form) return;
 
-  var feedback = document.getElementById("form-success");
   form.addEventListener("submit", function (event) {
     var isNameValid = validateRequired("name", "Please enter your name.");
     var isEmailValid = validateEmail("email");
     var isMessageValid = validateRequired("message", "Please enter a message.");
-
-    if (!isNameValid || !isEmailValid || !isMessageValid) {
-      event.preventDefault();
-      return;
-    }
-
-    // Only the PHP contact endpoint can persist messages. Never display a
-    // success state or clear the fields for a static HTML form.
-    var action = form.getAttribute("action") || "";
-    var isPost = form.method.toUpperCase() === "POST";
-    var hasPhpEndpoint = /(^|\/)contact\.php(?:$|[?#])/i.test(action);
-    if (!isPost || !hasPhpEndpoint) {
-      event.preventDefault();
-      if (feedback) {
-        feedback.textContent = "This form cannot save messages on this static page. Please open the PHP-enabled portfolio site to send your message.";
-        feedback.classList.add("show");
-        feedback.setAttribute("role", "alert");
-      }
-      return;
-    }
-
-    // Let the browser submit the form to contact.php. The server will render
-    // the real success or validation message after processing it.
-    var submitButton = form.querySelector('button[type="submit"]');
-    if (submitButton) {
-      submitButton.disabled = true;
-      submitButton.textContent = "Sending…";
-    }
+    if (!isNameValid || !isEmailValid || !isMessageValid) event.preventDefault();
   });
 
   ["name", "email", "message"].forEach(function (fieldId) {
@@ -158,7 +124,6 @@ function validateRequired(fieldId, message) {
   var errorEl = document.getElementById(fieldId + "-error");
   if (!field) return true;
   var value = field.value.trim();
-
   if (value === "") {
     showFieldError(field, errorEl, message);
     return false;
@@ -173,7 +138,6 @@ function validateEmail(fieldId) {
   if (!field) return true;
   var value = field.value.trim();
   var emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
   if (value === "") {
     showFieldError(field, errorEl, "Please enter your email.");
     return false;

@@ -23,23 +23,23 @@ try {
 <link rel="stylesheet" href="css/style.css">
 <script>
   (function () {
-    var savedTheme = localStorage.getItem("portfolio-theme");
-    if (savedTheme === "dark") document.documentElement.setAttribute("data-theme", "dark");
+    var savedTheme = localStorage.getItem('portfolio-theme');
+    if (savedTheme === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
   })();
 </script>
 </head>
 <body>
 <header>
   <div class="nav-inner wrap">
-    <a href="index.html" class="logo">Joram Rusiana</a>
+    <a href="index.php" class="logo">Joram Rusiana</a>
     <nav id="main-nav">
       <ul>
-        <li><a href="index.html" class="nav-link">Home</a></li>
-        <li><a href="about.html" class="nav-link">About</a></li>
+        <li><a href="index.php" class="nav-link">Home</a></li>
+        <li><a href="about.php" class="nav-link">About</a></li>
         <li><a href="skills.php" class="nav-link active">Skills</a></li>
         <li><a href="projects.php" class="nav-link">Projects</a></li>
-        <li><a href="resume.html" class="nav-link">Resume</a></li>
-        <li><a href="contact.html" class="nav-link">Contact</a></li>
+        <li><a href="resume.php" class="nav-link">Resume</a></li>
+        <li><a href="contact.php" class="nav-link">Contact</a></li>
       </ul>
     </nav>
     <div class="nav-controls">
@@ -83,9 +83,9 @@ try {
   <div class="wrap footer-inner">
     <p>&copy; 2026 Joram Rusiana. All Rights Reserved.</p>
     <ul class="social-links">
-      <li><a href="contact.html">Facebook</a></li>
-      <li><a href="contact.html">Instagram</a></li>
-      <li><a href="contact.html">LinkedIn</a></li>
+      <li><a href="contact.php">Facebook</a></li>
+      <li><a href="contact.php">Instagram</a></li>
+      <li><a href="contact.php">LinkedIn</a></li>
     </ul>
   </div>
 </footer>

@@ -50,14 +50,14 @@ $token = csrf_token();
 <body>
 <header>
   <div class="nav-inner wrap">
-    <a href="index.html" class="logo">Joram Rusiana</a>
+    <a href="index.php" class="logo">Joram Rusiana</a>
     <nav id="main-nav">
       <ul>
-        <li><a href="index.html" class="nav-link">Home</a></li>
-        <li><a href="about.html" class="nav-link">About</a></li>
+        <li><a href="index.php" class="nav-link">Home</a></li>
+        <li><a href="about.php" class="nav-link">About</a></li>
         <li><a href="skills.php" class="nav-link">Skills</a></li>
         <li><a href="projects.php" class="nav-link">Projects</a></li>
-        <li><a href="resume.html" class="nav-link">Resume</a></li>
+        <li><a href="resume.php" class="nav-link">Resume</a></li>
         <li><a href="contact.php" class="nav-link active">Contact</a></li>
       </ul>
     </nav>
@@ -78,54 +78,22 @@ $token = csrf_token();
         <p><strong>Name:</strong> Joram Rusiana</p>
         <p><strong>Email:</strong> <a href="mailto:rusianajor@gmail.com">rusianajor@gmail.com</a></p>
         <p><strong>Location:</strong> Negros Oriental, Philippines</p>
-        <h3>Find me online</h3>
-        <ul class="social-list">
-          <li><a href="https://www.facebook.com/share/1CEdk9SWvG/" target="_blank" rel="noopener noreferrer">Facebook</a></li>
-          <li><a href="https://www.instagram.com/jor_ruhm?stkn=MWI3Y2NyYzdnMWI1Zw==" target="_blank" rel="noopener noreferrer">Instagram</a></li>
-          <li><a href="https://www.linkedin.com/" target="_blank" rel="noopener noreferrer">LinkedIn</a></li>
-        </ul>
       </div>
       <form id="contact-form" method="post" action="contact.php" novalidate>
         <input type="hidden" name="csrf_token" value="<?php echo escape_html($token); ?>">
-        <?php if ($error !== ''): ?>
-          <div class="admin-error" role="alert"><?php echo escape_html($error); ?></div>
-        <?php endif; ?>
-        <?php if ($success !== ''): ?>
-          <div id="form-success" class="admin-success show" role="status"><?php echo escape_html($success); ?></div>
-        <?php endif; ?>
-        <div class="field">
-          <label for="name">Name</label>
-          <input type="text" id="name" name="name" maxlength="120" minlength="2" required value="<?php echo escape_html($success === '' ? ($name ?? '') : ''); ?>">
-          <span class="error-text" id="name-error"></span>
-        </div>
-        <div class="field">
-          <label for="email">Email</label>
-          <input type="email" id="email" name="email" maxlength="190" required value="<?php echo escape_html($success === '' ? ($email ?? '') : ''); ?>">
-          <span class="error-text" id="email-error"></span>
-        </div>
-        <div class="field">
-          <label for="subject">Subject</label>
-          <input type="text" id="subject" name="subject" maxlength="180" value="<?php echo escape_html($success === '' ? ($subject ?? '') : ''); ?>">
-        </div>
-        <div class="field">
-          <label for="message">Message</label>
-          <textarea id="message" name="message" maxlength="5000" minlength="10" required><?php echo escape_html($success === '' ? ($message ?? '') : ''); ?></textarea>
-          <span class="error-text" id="message-error"></span>
-        </div>
+        <?php if ($error !== ''): ?><div class="admin-error" role="alert"><?php echo escape_html($error); ?></div><?php endif; ?>
+        <?php if ($success !== ''): ?><div id="form-success" class="admin-success show" role="status"><?php echo escape_html($success); ?></div><?php endif; ?>
+        <div class="field"><label for="name">Name</label><input type="text" id="name" name="name" maxlength="120" minlength="2" required value="<?php echo escape_html($success === '' ? ($name ?? '') : ''); ?>"><span class="error-text" id="name-error"></span></div>
+        <div class="field"><label for="email">Email</label><input type="email" id="email" name="email" maxlength="190" required value="<?php echo escape_html($success === '' ? ($email ?? '') : ''); ?>"><span class="error-text" id="email-error"></span></div>
+        <div class="field"><label for="subject">Subject</label><input type="text" id="subject" name="subject" maxlength="180" value="<?php echo escape_html($success === '' ? ($subject ?? '') : ''); ?>"></div>
+        <div class="field"><label for="message">Message</label><textarea id="message" name="message" maxlength="5000" minlength="10" required><?php echo escape_html($success === '' ? ($message ?? '') : ''); ?></textarea><span class="error-text" id="message-error"></span></div>
         <button type="submit">Send Message</button>
       </form>
     </div>
   </section>
 </main>
 <footer>
-  <div class="wrap footer-inner">
-    <p>&copy; 2026 Joram Rusiana. All Rights Reserved.</p>
-    <ul class="social-links">
-      <li><a href="https://www.facebook.com/share/1CEdk9SWvG/" target="_blank" rel="noopener noreferrer">Facebook</a></li>
-      <li><a href="https://www.instagram.com/jor_ruhm?stkn=MWI3Y2NyYzdnMWI1Zw==" target="_blank" rel="noopener noreferrer">Instagram</a></li>
-      <li><a href="https://www.linkedin.com/" target="_blank" rel="noopener noreferrer">LinkedIn</a></li>
-    </ul>
-  </div>
+  <div class="wrap footer-inner"><p>&copy; 2026 Joram Rusiana. All Rights Reserved.</p></div>
 </footer>
 <button id="scroll-top-btn" aria-label="Scroll to top">&uarr;</button>
 <script src="js/script.js"></script>

@@ -36,26 +36,23 @@ function project_technologies(?string $technologies): array
 <link rel="stylesheet" href="css/style.css">
 <script>
   (function () {
-    var savedTheme = localStorage.getItem("portfolio-theme");
-    if (savedTheme === "dark") {
-      document.documentElement.setAttribute("data-theme", "dark");
-    }
+    var savedTheme = localStorage.getItem('portfolio-theme');
+    if (savedTheme === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
   })();
 </script>
 </head>
 <body>
-
 <header>
   <div class="nav-inner wrap">
-    <a href="index.html" class="logo">Joram Rusiana</a>
+    <a href="index.php" class="logo">Joram Rusiana</a>
     <nav id="main-nav">
       <ul>
-        <li><a href="index.html" class="nav-link">Home</a></li>
-        <li><a href="about.html" class="nav-link">About</a></li>
-        <li><a href="skills.html" class="nav-link">Skills</a></li>
+        <li><a href="index.php" class="nav-link">Home</a></li>
+        <li><a href="about.php" class="nav-link">About</a></li>
+        <li><a href="skills.php" class="nav-link">Skills</a></li>
         <li><a href="projects.php" class="nav-link active">Projects</a></li>
-        <li><a href="resume.html" class="nav-link">Resume</a></li>
-        <li><a href="contact.html" class="nav-link">Contact</a></li>
+        <li><a href="resume.php" class="nav-link">Resume</a></li>
+        <li><a href="contact.php" class="nav-link">Contact</a></li>
       </ul>
     </nav>
     <div class="nav-controls">
@@ -64,13 +61,11 @@ function project_technologies(?string $technologies): array
     </div>
   </div>
 </header>
-
 <main>
   <div class="wrap page-header">
     <h1>My Projects</h1>
     <p>A few things I've built.</p>
   </div>
-
   <section id="projects">
     <div class="wrap">
       <?php if (count($projects) === 0): ?>
@@ -80,8 +75,7 @@ function project_technologies(?string $technologies): array
           <?php foreach ($projects as $project): ?>
             <article class="project-card">
               <figure>
-                <img src="<?php echo escape_html(project_image($project['image_path'])); ?>"
-                     alt="<?php echo escape_html($project['title']); ?> project">
+                <img src="<?php echo escape_html(project_image($project['image_path'])); ?>" alt="<?php echo escape_html($project['title']); ?> project">
                 <figcaption>
                   <h3><?php echo escape_html($project['title']); ?></h3>
                   <p><?php echo nl2br(escape_html($project['description'])); ?></p>
@@ -91,9 +85,7 @@ function project_technologies(?string $technologies): array
                   <?php $technologies = project_technologies($project['technologies']); ?>
                   <?php if (count($technologies) > 0): ?>
                     <ul class="tech-tags">
-                      <?php foreach ($technologies as $technology): ?>
-                        <li><?php echo escape_html($technology); ?></li>
-                      <?php endforeach; ?>
+                      <?php foreach ($technologies as $technology): ?><li><?php echo escape_html($technology); ?></li><?php endforeach; ?>
                     </ul>
                   <?php endif; ?>
                 </figcaption>
@@ -105,18 +97,16 @@ function project_technologies(?string $technologies): array
     </div>
   </section>
 </main>
-
 <footer>
   <div class="wrap footer-inner">
     <p>&copy; 2026 Joram Rusiana. All Rights Reserved.</p>
     <ul class="social-links">
-      <li><a href="contact.html">Facebook</a></li>
-      <li><a href="contact.html">Instagram</a></li>
-      <li><a href="contact.html">LinkedIn</a></li>
+      <li><a href="contact.php">Facebook</a></li>
+      <li><a href="contact.php">Instagram</a></li>
+      <li><a href="contact.php">LinkedIn</a></li>
     </ul>
   </div>
 </footer>
-
 <button id="scroll-top-btn" aria-label="Scroll to top">&uarr;</button>
 <script src="js/script.js"></script>
 </body>

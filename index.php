@@ -16,7 +16,7 @@ if (!$profile) {
     $profile = [
         'full_name' => 'Joram Rusiana',
         'headline' => 'BSIT Student & Aspiring Software Engineer',
-        'introduction' => "Welcome to my personal portfolio.",
+        'introduction' => 'Welcome to my personal portfolio.',
         'biography' => 'I am a BSIT student passionate about building useful and accessible web applications.',
         'email' => 'rusianajor@gmail.com',
         'phone' => '',
