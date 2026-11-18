@@ -11,3 +11,12 @@ DirectoryIndex index.php index.html
 <FilesMatch "^(\.git|\.env|composer\.(json|lock)|.*\.sql)$">
     Require all denied
 </FilesMatch>
+
+# Admin styles change frequently; avoid a stale browser/proxy copy.
+<IfModule mod_headers.c>
+    <Files "admin.css">
+        Header set Cache-Control "no-cache, no-store, must-revalidate"
+        Header set Pragma "no-cache"
+        Header set Expires "0"
+    </Files>
+</IfModule>
