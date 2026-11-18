@@ -7,13 +7,27 @@ try {
     $profileStatement = $pdo->prepare('SELECT full_name, headline, email, phone, location FROM profile WHERE id = 1');
     $profileStatement->execute();
     $profile = $profileStatement->fetch();
+
+    $education = $pdo->query('SELECT institution, qualification, details, start_date, end_date FROM education ORDER BY sort_order ASC, id DESC')->fetchAll();
+    $experience = $pdo->query('SELECT title, organization, details, start_date, end_date FROM experience ORDER BY sort_order ASC, id DESC')->fetchAll();
+    $achievements = $pdo->query('SELECT title, organization, details, image_path, achievement_date FROM achievements ORDER BY sort_order ASC, id DESC')->fetchAll();
 } catch (PDOException $error) {
     error_log($error->getMessage());
     $profile = false;
+    $education = [];
+    $experience = [];
+    $achievements = [];
 }
 
 if (!$profile) {
     $profile = ['full_name' => 'Joram Rusiana', 'headline' => 'BSIT Student', 'email' => 'rusianajor@gmail.com', 'phone' => '', 'location' => 'Negros Oriental, Philippines'];
+}
+
+function resume_date(?string $date): string
+{
+    if (!$date) return '';
+    $timestamp = strtotime($date);
+    return $timestamp ? date('F Y', $timestamp) : '';
 }
 ?>
 <!DOCTYPE html>
@@ -44,31 +58,53 @@ if (!$profile) {
         <li><a href="contact.php" class="nav-link">Contact</a></li>
       </ul>
     </nav>
-    <div class="nav-controls">
-      <button id="theme-toggle" aria-label="Toggle dark mode">Dark</button>
-      <button id="nav-toggle" aria-label="Toggle menu" aria-expanded="false">Menu</button>
-    </div>
+    <div class="nav-controls"><button id="theme-toggle" aria-label="Toggle dark mode">Dark</button><button id="nav-toggle" aria-label="Toggle menu" aria-expanded="false">Menu</button></div>
   </div>
 </header>
 <main>
-  <div class="wrap page-header">
-    <h1>Resume</h1>
-    <p><?php echo escape_html($profile['headline']); ?></p>
-  </div>
-  <section id="resume">
-    <div class="wrap">
-      <h2><?php echo escape_html($profile['full_name']); ?></h2>
-      <?php if (!empty($profile['email'])): ?><p>Email: <a href="mailto:<?php echo escape_html($profile['email']); ?>"><?php echo escape_html($profile['email']); ?></a></p><?php endif; ?>
-      <?php if (!empty($profile['phone'])): ?><p>Phone: <?php echo escape_html($profile['phone']); ?></p><?php endif; ?>
-      <?php if (!empty($profile['location'])): ?><p>Location: <?php echo escape_html($profile['location']); ?></p><?php endif; ?>
-    </div>
-  </section>
+  <div class="wrap page-header"><h1>Resume</h1><p><?php echo escape_html($profile['headline']); ?></p></div>
+  <section id="resume"><div class="wrap">
+    <h2><?php echo escape_html($profile['full_name']); ?></h2>
+    <?php if (!empty($profile['email'])): ?><p>Email: <a href="mailto:<?php echo escape_html($profile['email']); ?>"><?php echo escape_html($profile['email']); ?></a></p><?php endif; ?>
+    <?php if (!empty($profile['phone'])): ?><p>Phone: <?php echo escape_html($profile['phone']); ?></p><?php endif; ?>
+    <?php if (!empty($profile['location'])): ?><p>Location: <?php echo escape_html($profile['location']); ?></p><?php endif; ?>
+
+    <h2>Education</h2>
+    <?php if (count($education) === 0): ?><p>No education entries are currently available.</p><?php else: ?>
+      <?php foreach ($education as $item): ?>
+        <article class="edu-card"><h3><?php echo escape_html($item['qualification']); ?></h3><p><?php echo escape_html($item['institution']); ?></p>
+          <?php if (!empty($item['details'])): ?><p><?php echo nl2br(escape_html($item['details'])); ?></p><?php endif; ?>
+          <?php if (!empty($item['start_date']) || !empty($item['end_date'])): ?><p><?php echo escape_html(resume_date($item['start_date'])); ?><?php echo !empty($item['start_date']) && !empty($item['end_date']) ? ' — ' : ''; ?><?php echo escape_html(resume_date($item['end_date'])); ?></p><?php endif; ?>
+        </article>
+      <?php endforeach; ?>
+    <?php endif; ?>
+
+    <h2>Experience & Activities</h2>
+    <?php if (count($experience) === 0): ?><p>No experience entries are currently available.</p><?php else: ?>
+      <?php foreach ($experience as $item): ?>
+        <article class="edu-card"><h3><?php echo escape_html($item['title']); ?></h3>
+          <?php if (!empty($item['organization'])): ?><p><?php echo escape_html($item['organization']); ?></p><?php endif; ?>
+          <?php if (!empty($item['details'])): ?><p><?php echo nl2br(escape_html($item['details'])); ?></p><?php endif; ?>
+          <?php if (!empty($item['start_date']) || !empty($item['end_date'])): ?><p><?php echo escape_html(resume_date($item['start_date'])); ?><?php echo !empty($item['start_date']) && !empty($item['end_date']) ? ' — ' : ''; ?><?php echo escape_html(resume_date($item['end_date'])); ?></p><?php endif; ?>
+        </article>
+      <?php endforeach; ?>
+    <?php endif; ?>
+
+    <h2>Achievements & Certificates</h2>
+    <?php if (count($achievements) === 0): ?><p>No achievements are currently available.</p><?php else: ?>
+      <?php foreach ($achievements as $item): ?>
+        <article class="edu-card">
+          <?php if (!empty($item['image_path'])): ?><img src="<?php echo escape_html($item['image_path']); ?>" alt="<?php echo escape_html($item['title']); ?>" style="max-width:180px;height:auto;"><?php endif; ?>
+          <h3><?php echo escape_html($item['title']); ?></h3>
+          <?php if (!empty($item['organization'])): ?><p><?php echo escape_html($item['organization']); ?></p><?php endif; ?>
+          <?php if (!empty($item['details'])): ?><p><?php echo nl2br(escape_html($item['details'])); ?></p><?php endif; ?>
+          <?php if (!empty($item['achievement_date'])): ?><p><?php echo escape_html(resume_date($item['achievement_date'])); ?></p><?php endif; ?>
+        </article>
+      <?php endforeach; ?>
+    <?php endif; ?>
+  </div></section>
 </main>
-<footer>
-  <div class="wrap footer-inner">
-    <p>&copy; 2026 <?php echo escape_html($profile['full_name']); ?>. All Rights Reserved.</p>
-  </div>
-</footer>
+<footer><div class="wrap footer-inner"><p>&copy; 2026 <?php echo escape_html($profile['full_name']); ?>. All Rights Reserved.</p></div></footer>
 <button id="scroll-top-btn" aria-label="Scroll to top">&uarr;</button>
 <script src="js/script.js"></script>
 </body>
