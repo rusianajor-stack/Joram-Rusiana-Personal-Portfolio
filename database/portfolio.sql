@@ -24,6 +24,9 @@ CREATE TABLE IF NOT EXISTS skills (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(120) NOT NULL,
     category VARCHAR(120) NOT NULL DEFAULT '',
+    description TEXT NOT NULL,
+    level_label VARCHAR(50) NOT NULL DEFAULT '',
+    level_percent TINYINT UNSIGNED NOT NULL DEFAULT 0,
     sort_order INT NOT NULL DEFAULT 0,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -107,6 +110,16 @@ ON DUPLICATE KEY UPDATE id = id;
 INSERT INTO website_settings (setting_key, setting_value)
 VALUES ('site_title', 'Joram Rusiana — Personal Portfolio')
 ON DUPLICATE KEY UPDATE setting_key = setting_key;
+
+INSERT INTO skills (name, category, description, level_label, level_percent, sort_order) VALUES
+('HTML & CSS', 'Web Development', 'Building structured, styled web pages with clean layouts and responsive designs.', 'Proficient', 70, 1),
+('C++', 'Programming', 'Applied for high-performance programming, problem-solving, and efficient memory management.', 'Proficient', 70, 2),
+('SQL / MySQL', 'Database', 'Organizing, querying, and handling data retrieval for databases.', 'Intermediate', 50, 3),
+('Java', 'Programming', 'Fundamental knowledge of object-oriented programming concepts.', 'Basic', 35, 4),
+('JavaScript', 'Web Development', 'Adding interactivity and dynamic behavior to web pages.', 'Beginner', 30, 5),
+('Adobe Animate', 'Animation', 'Creating digital animations, interactive content, and multimedia advertisements.', 'Proficient', 70, 6),
+('Git & GitHub', 'Tools', 'Version control and hosting projects.', 'Intermediate', 50, 7)
+ON DUPLICATE KEY UPDATE name = name;
 
 INSERT INTO projects (title, description, technologies, image_path, sort_order) VALUES
 ('Electronic Vehicular Incident Report System', 'A web-based system for reporting vehicular incidents, with photo uploads, location information, report verification, maps, and an admin dashboard.', 'HTML, CSS, JavaScript, MySQL', 'images/project-evirs.svg', 1),

@@ -47,22 +47,17 @@ $token = csrf_token();
     </div>
     <section class="admin-stats" aria-label="Portfolio statistics">
         <?php foreach ($counts as $label => $count): ?>
-            <article class="admin-stat-card">
-                <p><?php echo escape_html($label); ?></p>
-                <strong><?php echo $count; ?></strong>
-            </article>
+            <article class="admin-stat-card"><p><?php echo escape_html($label); ?></p><strong><?php echo $count; ?></strong></article>
         <?php endforeach; ?>
     </section>
     <section class="admin-notice">
-        <div>
-            <h2>Messages to review</h2>
-            <p><?php echo $unreadMessages; ?> unread message<?php echo $unreadMessages === 1 ? '' : 's'; ?>.</p>
-        </div>
+        <div><h2>Messages to review</h2><p><?php echo $unreadMessages; ?> unread message<?php echo $unreadMessages === 1 ? '' : 's'; ?>.</p></div>
     </section>
     <nav class="admin-shortcuts" aria-label="Content management">
         <h2>Content management</h2>
         <div class="admin-shortcut-list">
             <a class="admin-button" href="projects.php">Manage projects</a>
+            <a class="admin-button" href="skills.php">Manage skills</a>
         </div>
     </nav>
 </main>
