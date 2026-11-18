@@ -1,7 +1,13 @@
-# Keep legacy static-page URLs working while public content is served by PHP.
-Redirect 301 /index.html /index.php
-Redirect 301 /about.html /about.php
-Redirect 301 /projects.html /projects.php
-Redirect 301 /skills.html /skills.php
-Redirect 301 /resume.html /resume.php
-Redirect 301 /contact.html /contact.php
+# Keep legacy static-page URLs routed to the PHP-backed pages, including when
+# this project is installed inside a subdirectory such as /portfolio/.
+DirectoryIndex index.php index.html
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteRule ^(index|about|skills|projects|resume|contact)\.html$ $1.php [R=301,L,NC]
+</IfModule>
+
+# Protect configuration, SQL exports, and repository metadata from web access.
+<FilesMatch "^(\.git|\.env|composer\.(json|lock)|.*\.sql)$">
+    Require all denied
+</FilesMatch>

@@ -15,17 +15,16 @@ try {
 if (!$profile) {
     $profile = [
         'full_name' => 'Joram Rusiana',
-        'headline' => 'BSIT Student & Aspiring Software Engineer',
-        'introduction' => 'Welcome to my personal portfolio.',
-        'biography' => 'I am a BSIT student passionate about building useful and accessible web applications.',
+        'headline' => 'BSIT Student',
+        'introduction' => 'I am interested in web development, animation, and technology. Welcome to my personal portfolio.',
         'email' => 'rusianajor@gmail.com',
         'phone' => '',
         'location' => 'Negros Oriental, Philippines',
-        'profile_image' => 'images/profile.jpg',
+        'profile_image' => 'images/avatar.svg',
     ];
 }
 
-$profileImage = !empty($profile['profile_image']) ? $profile['profile_image'] : 'images/profile.jpg';
+$profileImage = trim($profile['profile_image'] ?? '') ?: 'images/avatar.svg';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -62,20 +61,17 @@ $profileImage = !empty($profile['profile_image']) ? $profile['profile_image'] : 
   </div>
 </header>
 <main>
-  <section class="hero">
+  <section id="home" class="hero">
     <div class="wrap hero-grid">
-      <div class="hero-content">
-        <p class="hero-eyebrow">Welcome to my portfolio</p>
-        <h1><?php echo escape_html($profile['full_name']); ?></h1>
-        <h2><span id="typing-role"></span></h2>
-        <p><?php echo nl2br(escape_html($profile['introduction'])); ?></p>
+      <img src="<?php echo escape_html($profileImage); ?>" alt="Portrait of <?php echo escape_html($profile['full_name']); ?>">
+      <div class="hero-text">
+        <h1>Hi, I'm <?php echo escape_html($profile['full_name']); ?></h1>
+        <p class="hero-role">I'm a <span id="typing-role"><?php echo escape_html($profile['headline']); ?></span></p>
+        <p class="hero-desc"><?php echo nl2br(escape_html($profile['introduction'])); ?></p>
         <div class="hero-actions">
-          <a href="projects.php" class="btn">View My Projects</a>
-          <a href="contact.php" class="btn">Contact Me</a>
+          <a href="projects.php" class="btn btn-accent">View My Projects</a>
+          <a href="contact.php" class="btn btn-outline">Get In Touch</a>
         </div>
-      </div>
-      <div class="hero-image">
-        <img src="<?php echo escape_html($profileImage); ?>" alt="Portrait of <?php echo escape_html($profile['full_name']); ?>">
       </div>
     </div>
   </section>

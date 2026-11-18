@@ -7,7 +7,6 @@ try {
     $profileStatement = $pdo->prepare('SELECT full_name, headline, email, phone, location FROM profile WHERE id = 1');
     $profileStatement->execute();
     $profile = $profileStatement->fetch();
-
     $education = $pdo->query('SELECT institution, qualification, details, start_date, end_date FROM education ORDER BY sort_order ASC, id DESC')->fetchAll();
     $experience = $pdo->query('SELECT title, organization, details, start_date, end_date FROM experience ORDER BY sort_order ASC, id DESC')->fetchAll();
     $achievements = $pdo->query('SELECT title, organization, details, image_path, achievement_date FROM achievements ORDER BY sort_order ASC, id DESC')->fetchAll();
@@ -19,9 +18,7 @@ try {
     $achievements = [];
 }
 
-if (!$profile) {
-    $profile = ['full_name' => 'Joram Rusiana', 'headline' => 'BSIT Student', 'email' => 'rusianajor@gmail.com', 'phone' => '', 'location' => 'Negros Oriental, Philippines'];
-}
+if (!$profile) $profile = ['full_name' => 'Joram Rusiana', 'headline' => 'BSIT Student', 'email' => 'rusianajor@gmail.com', 'phone' => '', 'location' => 'Negros Oriental, Philippines'];
 
 function resume_date(?string $date): string
 {
@@ -29,83 +26,49 @@ function resume_date(?string $date): string
     $timestamp = strtotime($date);
     return $timestamp ? date('F Y', $timestamp) : '';
 }
+
+$certificates = [
+    ['IT Customer Support Basics', 'September 2026', 'certificate/IT_Customer_Support_Basics_certificate_rusianajor-gmail-com_e859062d-60d0-4604-bc86-24d7bbd7f6bc.pdf'],
+    ['Computer Hardware Basics', 'September 2026', 'certificate/Computer_Hardware_Basics_certificate_rusianajor-gmail-com_4a7c3c27-fbe7-4cc9-b119-82af0a9df2dc.pdf'],
+    ['AI for Business Professionals', 'September 2026', 'certificate/AI for Business Professionals.pdf'],
+    ['Digital Awareness', 'September 2026', 'certificate/Digital_Awareness_certificate_rusianajor-gmail-com_31a97fc7-4949-49d2-9e7d-bdbf6b51c9ac.pdf'],
+    ['Introduction to Modern AI', 'August 2026', 'certificate/Introduction_to_Modern_AI_certificate_rusianajor-gmail-com_4a01f6f2-3aaa-4015-a8fe-db469da23822.pdf'],
+    ['Network Addressing and Basic Troubleshooting', 'April 2026', 'certificate/Network_Addressing_and_Basic_Troubleshooting_certificate_rusianajor-gmail-com_39965394-1107-493e-b1f7-e27c98385092.pdf'],
+];
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Resume — <?php echo escape_html($profile['full_name']); ?></title>
-<link rel="stylesheet" href="css/style.css">
-<script>
-  (function () {
-    var savedTheme = localStorage.getItem('portfolio-theme');
-    if (savedTheme === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
-  })();
-</script>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Resume — <?php echo escape_html($profile['full_name']); ?></title><link rel="stylesheet" href="css/style.css">
+<script>(function(){if(localStorage.getItem('portfolio-theme')==='dark')document.documentElement.setAttribute('data-theme','dark');})();</script>
 </head>
 <body>
-<header>
-  <div class="nav-inner wrap">
-    <a href="index.php" class="logo"><?php echo escape_html($profile['full_name']); ?></a>
-    <nav id="main-nav">
-      <ul>
-        <li><a href="index.php" class="nav-link">Home</a></li>
-        <li><a href="about.php" class="nav-link">About</a></li>
-        <li><a href="skills.php" class="nav-link">Skills</a></li>
-        <li><a href="projects.php" class="nav-link">Projects</a></li>
-        <li><a href="resume.php" class="nav-link active">Resume</a></li>
-        <li><a href="contact.php" class="nav-link">Contact</a></li>
-      </ul>
-    </nav>
-    <div class="nav-controls"><button id="theme-toggle" aria-label="Toggle dark mode">Dark</button><button id="nav-toggle" aria-label="Toggle menu" aria-expanded="false">Menu</button></div>
-  </div>
-</header>
+<header><div class="nav-inner wrap"><a href="index.php" class="logo"><?php echo escape_html($profile['full_name']); ?></a><nav id="main-nav"><ul>
+<li><a href="index.php" class="nav-link">Home</a></li><li><a href="about.php" class="nav-link">About</a></li><li><a href="skills.php" class="nav-link">Skills</a></li><li><a href="projects.php" class="nav-link">Projects</a></li><li><a href="resume.php" class="nav-link active">Resume</a></li><li><a href="contact.php" class="nav-link">Contact</a></li>
+</ul></nav><div class="nav-controls"><button id="theme-toggle" aria-label="Toggle dark mode">Dark</button><button id="nav-toggle" aria-label="Toggle menu" aria-expanded="false">Menu</button></div></div></header>
 <main>
-  <div class="wrap page-header"><h1>Resume</h1><p><?php echo escape_html($profile['headline']); ?></p></div>
-  <section id="resume"><div class="wrap">
-    <h2><?php echo escape_html($profile['full_name']); ?></h2>
-    <?php if (!empty($profile['email'])): ?><p>Email: <a href="mailto:<?php echo escape_html($profile['email']); ?>"><?php echo escape_html($profile['email']); ?></a></p><?php endif; ?>
-    <?php if (!empty($profile['phone'])): ?><p>Phone: <?php echo escape_html($profile['phone']); ?></p><?php endif; ?>
-    <?php if (!empty($profile['location'])): ?><p>Location: <?php echo escape_html($profile['location']); ?></p><?php endif; ?>
-
-    <h2>Education</h2>
-    <?php if (count($education) === 0): ?><p>No education entries are currently available.</p><?php else: ?>
-      <?php foreach ($education as $item): ?>
-        <article class="edu-card"><h3><?php echo escape_html($item['qualification']); ?></h3><p><?php echo escape_html($item['institution']); ?></p>
-          <?php if (!empty($item['details'])): ?><p><?php echo nl2br(escape_html($item['details'])); ?></p><?php endif; ?>
-          <?php if (!empty($item['start_date']) || !empty($item['end_date'])): ?><p><?php echo escape_html(resume_date($item['start_date'])); ?><?php echo !empty($item['start_date']) && !empty($item['end_date']) ? ' — ' : ''; ?><?php echo escape_html(resume_date($item['end_date'])); ?></p><?php endif; ?>
-        </article>
-      <?php endforeach; ?>
-    <?php endif; ?>
-
-    <h2>Experience & Activities</h2>
-    <?php if (count($experience) === 0): ?><p>No experience entries are currently available.</p><?php else: ?>
-      <?php foreach ($experience as $item): ?>
-        <article class="edu-card"><h3><?php echo escape_html($item['title']); ?></h3>
-          <?php if (!empty($item['organization'])): ?><p><?php echo escape_html($item['organization']); ?></p><?php endif; ?>
-          <?php if (!empty($item['details'])): ?><p><?php echo nl2br(escape_html($item['details'])); ?></p><?php endif; ?>
-          <?php if (!empty($item['start_date']) || !empty($item['end_date'])): ?><p><?php echo escape_html(resume_date($item['start_date'])); ?><?php echo !empty($item['start_date']) && !empty($item['end_date']) ? ' — ' : ''; ?><?php echo escape_html(resume_date($item['end_date'])); ?></p><?php endif; ?>
-        </article>
-      <?php endforeach; ?>
-    <?php endif; ?>
-
-    <h2>Achievements & Certificates</h2>
-    <?php if (count($achievements) === 0): ?><p>No achievements are currently available.</p><?php else: ?>
-      <?php foreach ($achievements as $item): ?>
-        <article class="edu-card">
-          <?php if (!empty($item['image_path'])): ?><img src="<?php echo escape_html($item['image_path']); ?>" alt="<?php echo escape_html($item['title']); ?>" style="max-width:180px;height:auto;"><?php endif; ?>
-          <h3><?php echo escape_html($item['title']); ?></h3>
-          <?php if (!empty($item['organization'])): ?><p><?php echo escape_html($item['organization']); ?></p><?php endif; ?>
-          <?php if (!empty($item['details'])): ?><p><?php echo nl2br(escape_html($item['details'])); ?></p><?php endif; ?>
-          <?php if (!empty($item['achievement_date'])): ?><p><?php echo escape_html(resume_date($item['achievement_date'])); ?></p><?php endif; ?>
-        </article>
-      <?php endforeach; ?>
+  <div class="wrap page-header"><h1>Resume / Experience</h1><p>Education, activities, training, and certifications.</p></div>
+  <section id="education"><div class="wrap"><h2>Education</h2>
+    <?php if (!$education): ?><p>No education entries are currently available.</p><?php else: ?>
+      <?php foreach ($education as $item): ?><article class="edu-card"><div><h3><?php echo escape_html($item['qualification']); ?></h3><p><?php echo escape_html($item['institution']); ?></p><?php if (!empty($item['details'])): ?><p><?php echo nl2br(escape_html($item['details'])); ?></p><?php endif; ?><span><?php echo escape_html(resume_date($item['start_date'])); ?><?php if (!empty($item['start_date']) && !empty($item['end_date'])): ?>–<?php endif; ?><?php echo escape_html(resume_date($item['end_date']) ?: (!empty($item['start_date']) ? 'Present' : '')); ?></span></div></article><?php endforeach; ?>
     <?php endif; ?>
   </div></section>
+  <section id="experience"><div class="wrap"><h2>Activities &amp; Training</h2>
+    <?php if (!$experience): ?><p>No activities or training entries are currently available.</p><?php else: ?><ul class="timeline">
+      <?php foreach ($experience as $item): ?><li><h3><?php echo escape_html($item['title']); ?></h3><?php if (!empty($item['organization'])): ?><span><?php echo escape_html($item['organization']); ?></span><?php endif; ?><?php if (!empty($item['start_date']) || !empty($item['end_date'])): ?><p class="resume-date"><?php echo escape_html(resume_date($item['start_date'])); ?><?php if (!empty($item['start_date']) && !empty($item['end_date'])): ?> — <?php endif; ?><?php echo escape_html(resume_date($item['end_date']) ?: (!empty($item['start_date']) ? 'Present' : '')); ?></p><?php endif; ?><p><?php echo nl2br(escape_html($item['details'])); ?></p></li><?php endforeach; ?>
+    </ul><?php endif; ?>
+  </div></section>
+  <section id="achievements"><div class="wrap"><h2>Achievements &amp; Certificates</h2>
+    <?php if ($achievements): ?><ul class="timeline">
+      <?php foreach ($achievements as $item): ?><li><h3><?php echo escape_html($item['title']); ?></h3><?php if (!empty($item['organization'])): ?><span><?php echo escape_html($item['organization']); ?></span><?php endif; ?><?php if (!empty($item['achievement_date'])): ?><p class="resume-date"><?php echo escape_html(resume_date($item['achievement_date'])); ?></p><?php endif; ?><?php if (!empty($item['details'])): ?><p><?php echo nl2br(escape_html($item['details'])); ?></p><?php endif; ?><?php if (!empty($item['image_path'])): ?><img class="achievement-image" src="<?php echo escape_html($item['image_path']); ?>" alt="<?php echo escape_html($item['title']); ?> certificate or achievement image" loading="lazy"><?php endif; ?></li><?php endforeach; ?>
+    </ul><?php endif; ?>
+    <ul class="timeline">
+      <?php foreach ($certificates as [$title, $date, $path]): ?><li><h3><?php echo escape_html($title); ?></h3><span><?php echo escape_html($date); ?></span><p><a href="<?php echo escape_html($path); ?>" target="_blank" rel="noopener noreferrer">View Certificate</a></p></li><?php endforeach; ?>
+    </ul>
+  </div></section>
 </main>
-<footer><div class="wrap footer-inner"><p>&copy; 2026 <?php echo escape_html($profile['full_name']); ?>. All Rights Reserved.</p></div></footer>
-<button id="scroll-top-btn" aria-label="Scroll to top">&uarr;</button>
-<script src="js/script.js"></script>
+<footer><div class="wrap footer-inner"><p>&copy; 2026 <?php echo escape_html($profile['full_name']); ?>. All Rights Reserved.</p><ul class="social-links"><li><a href="contact.php">Facebook</a></li><li><a href="contact.php">Instagram</a></li><li><a href="contact.php">LinkedIn</a></li></ul></div></footer>
+<button id="scroll-top-btn" aria-label="Scroll to top">&uarr;</button><script src="js/script.js"></script>
 </body>
 </html>
