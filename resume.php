@@ -7,13 +7,37 @@ try {
     $profileStatement = $pdo->prepare('SELECT full_name, headline, email, phone, location FROM profile WHERE id = 1');
     $profileStatement->execute();
     $profile = $profileStatement->fetch();
+
+    $education = $pdo->query('SELECT * FROM education ORDER BY sort_order ASC, COALESCE(end_date, start_date) DESC, id DESC')->fetchAll();
+    $experience = $pdo->query('SELECT * FROM experience ORDER BY sort_order ASC, COALESCE(end_date, start_date) DESC, id DESC')->fetchAll();
+    $achievements = $pdo->query('SELECT * FROM achievements ORDER BY sort_order ASC, achievement_date DESC, id DESC')->fetchAll();
+
+    $settingsStatement = $pdo->query("SELECT setting_key, setting_value FROM website_settings WHERE setting_key IN ('resume_download_url', 'footer_text', 'site_title')");
+    $settings = [];
+    foreach ($settingsStatement as $row) {
+        $settings[$row['setting_key']] = $row['setting_value'];
+    }
 } catch (PDOException $error) {
     error_log($error->getMessage());
     $profile = false;
+    $education = [];
+    $experience = [];
+    $achievements = [];
+    $settings = [];
 }
 
 if (!$profile) {
     $profile = ['full_name' => 'Joram Rusiana', 'headline' => 'BSIT Student', 'email' => 'rusianajor@gmail.com', 'phone' => '', 'location' => 'Negros Oriental, Philippines'];
+}
+
+function format_resume_date(?string $date): string
+{
+    if (!$date) {
+        return '';
+    }
+
+    $timestamp = strtotime($date);
+    return $timestamp ? date('F Y', $timestamp) : '';
 }
 ?>
 <!DOCTYPE html>
@@ -61,12 +85,57 @@ if (!$profile) {
       <?php if (!empty($profile['email'])): ?><p>Email: <a href="mailto:<?php echo escape_html($profile['email']); ?>"><?php echo escape_html($profile['email']); ?></a></p><?php endif; ?>
       <?php if (!empty($profile['phone'])): ?><p>Phone: <?php echo escape_html($profile['phone']); ?></p><?php endif; ?>
       <?php if (!empty($profile['location'])): ?><p>Location: <?php echo escape_html($profile['location']); ?></p><?php endif; ?>
+
+      <?php if (!empty($settings['resume_download_url'])): ?>
+        <p><a class="button" href="<?php echo escape_html($settings['resume_download_url']); ?>" target="_blank" rel="noopener noreferrer">Download Resume</a></p>
+      <?php endif; ?>
+
+      <?php if ($education): ?>
+        <h2>Education</h2>
+        <?php foreach ($education as $item): ?>
+          <article class="resume-entry">
+            <h3><?php echo escape_html($item['qualification']); ?></h3>
+            <p><strong><?php echo escape_html($item['institution']); ?></strong></p>
+            <?php if (!empty($item['start_date']) || !empty($item['end_date'])): ?>
+              <p><?php echo escape_html(format_resume_date($item['start_date'])); ?> — <?php echo escape_html(format_resume_date($item['end_date']) ?: 'Present'); ?></p>
+            <?php endif; ?>
+            <?php if (!empty($item['details'])): ?><p><?php echo nl2br(escape_html($item['details'])); ?></p><?php endif; ?>
+          </article>
+        <?php endforeach; ?>
+      <?php endif; ?>
+
+      <?php if ($experience): ?>
+        <h2>Experience</h2>
+        <?php foreach ($experience as $item): ?>
+          <article class="resume-entry">
+            <h3><?php echo escape_html($item['title']); ?></h3>
+            <?php if (!empty($item['organization'])): ?><p><strong><?php echo escape_html($item['organization']); ?></strong></p><?php endif; ?>
+            <?php if (!empty($item['start_date']) || !empty($item['end_date'])): ?>
+              <p><?php echo escape_html(format_resume_date($item['start_date'])); ?> — <?php echo escape_html(format_resume_date($item['end_date']) ?: 'Present'); ?></p>
+            <?php endif; ?>
+            <?php if (!empty($item['details'])): ?><p><?php echo nl2br(escape_html($item['details'])); ?></p><?php endif; ?>
+          </article>
+        <?php endforeach; ?>
+      <?php endif; ?>
+
+      <?php if ($achievements): ?>
+        <h2>Achievements</h2>
+        <?php foreach ($achievements as $item): ?>
+          <article class="resume-entry">
+            <h3><?php echo escape_html($item['title']); ?></h3>
+            <?php if (!empty($item['organization'])): ?><p><strong><?php echo escape_html($item['organization']); ?></strong></p><?php endif; ?>
+            <?php if (!empty($item['achievement_date'])): ?><p><?php echo escape_html(format_resume_date($item['achievement_date'])); ?></p><?php endif; ?>
+            <?php if (!empty($item['details'])): ?><p><?php echo nl2br(escape_html($item['details'])); ?></p><?php endif; ?>
+            <?php if (!empty($item['image_path'])): ?><p><img src="<?php echo escape_html($item['image_path']); ?>" alt="<?php echo escape_html($item['title']); ?>" style="max-width:240px;height:auto;"></p><?php endif; ?>
+          </article>
+        <?php endforeach; ?>
+      <?php endif; ?>
     </div>
   </section>
 </main>
 <footer>
   <div class="wrap footer-inner">
-    <p>&copy; 2026 <?php echo escape_html($profile['full_name']); ?>. All Rights Reserved.</p>
+    <p><?php echo escape_html($settings['footer_text'] ?? ('&copy; 2026 ' . $profile['full_name'] . '. All Rights Reserved.')); ?></p>
   </div>
 </footer>
 <button id="scroll-top-btn" aria-label="Scroll to top">&uarr;</button>
