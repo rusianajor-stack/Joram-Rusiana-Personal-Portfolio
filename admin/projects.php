@@ -7,6 +7,7 @@ require_login();
 
 $error = '';
 $success = '';
+$editing = null;
 
 function upload_project_image(): string
 {
@@ -54,6 +55,23 @@ function upload_project_image(): string
     return 'uploads/projects/' . $fileName;
 }
 
+function delete_project_image(?string $imagePath): void
+{
+    if (!$imagePath || !str_starts_with($imagePath, 'uploads/projects/')) {
+        return;
+    }
+
+    $fileName = basename($imagePath);
+    if (!preg_match('/^[a-f0-9]{32}\.(jpg|png|webp|gif)$/', $fileName)) {
+        return;
+    }
+
+    $filePath = __DIR__ . '/../uploads/projects/' . $fileName;
+    if (is_file($filePath)) {
+        unlink($filePath);
+    }
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!csrf_is_valid($_POST['csrf_token'] ?? null)) {
         $error = 'Your form session has expired. Please try again.';
@@ -62,28 +80,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         try {
             if ($action === 'save') {
-                $id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
+                $id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT) ?: 0;
                 $title = trim($_POST['title'] ?? '');
                 $description = trim($_POST['description'] ?? '');
                 $technologies = trim($_POST['technologies'] ?? '');
                 $projectUrl = trim($_POST['project_url'] ?? '');
-                $sortOrder = filter_input(INPUT_POST, 'sort_order', FILTER_VALIDATE_INT) ?: 0;
+                $sortOrder = filter_input(INPUT_POST, 'sort_order', FILTER_VALIDATE_INT);
+                $sortOrder = $sortOrder === false || $sortOrder === null ? 0 : $sortOrder;
                 $isVisible = isset($_POST['is_visible']) ? 1 : 0;
 
-                if ($title === '' || $description === '' || strlen($title) > 180) {
-                    throw new RuntimeException('Enter a title and description.');
+                if ($title === '' || strlen($title) > 180) {
+                    throw new RuntimeException('Enter a title up to 180 characters long.');
                 }
-
-                if ($projectUrl !== '' && !filter_var($projectUrl, FILTER_VALIDATE_URL)) {
-                    throw new RuntimeException('Enter a valid project URL.');
+                if ($description === '' || strlen($description) > 5000) {
+                    throw new RuntimeException('Enter a description up to 5000 characters long.');
+                }
+                if (strlen($technologies) > 500) {
+                    throw new RuntimeException('Technologies must be 500 characters or shorter.');
+                }
+                if (strlen($projectUrl) > 500 || ($projectUrl !== '' && !filter_var($projectUrl, FILTER_VALIDATE_URL))) {
+                    throw new RuntimeException('Enter a valid project URL up to 500 characters long.');
                 }
 
                 $imagePath = upload_project_image();
 
-                if ($id) {
+                if ($id > 0) {
+                    $findProject = $pdo->prepare('SELECT image_path FROM projects WHERE id = ?');
+                    $findProject->execute([$id]);
+                    $oldProject = $findProject->fetch();
+                    if (!$oldProject) {
+                        throw new RuntimeException('The selected project was not found.');
+                    }
+
                     if ($imagePath !== '') {
                         $statement = $pdo->prepare('UPDATE projects SET title = ?, description = ?, technologies = ?, image_path = ?, project_url = ?, is_visible = ?, sort_order = ? WHERE id = ?');
                         $statement->execute([$title, $description, $technologies, $imagePath, $projectUrl, $isVisible, $sortOrder, $id]);
+                        delete_project_image($oldProject['image_path']);
                     } else {
                         $statement = $pdo->prepare('UPDATE projects SET title = ?, description = ?, technologies = ?, project_url = ?, is_visible = ?, sort_order = ? WHERE id = ?');
                         $statement->execute([$title, $description, $technologies, $projectUrl, $isVisible, $sortOrder, $id]);
@@ -94,9 +126,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $statement->execute([$title, $description, $technologies, $imagePath, $projectUrl, $isVisible, $sortOrder]);
                     $success = 'Project added.';
                 }
-            }
-
-            if ($action === 'delete') {
+            } elseif ($action === 'delete') {
                 $id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
                 if ($id) {
                     $statement = $pdo->prepare('SELECT image_path FROM projects WHERE id = ?');
@@ -105,12 +135,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                     $delete = $pdo->prepare('DELETE FROM projects WHERE id = ?');
                     $delete->execute([$id]);
-
-                    if ($project && str_starts_with($project['image_path'], 'uploads/projects/') ) {
-                        $filePath = __DIR__ . '/../' . $project['image_path'];
-                        if (is_file($filePath)) {
-                            unlink($filePath);
-                        }
+                    if ($project) {
+                        delete_project_image($project['image_path']);
                     }
                     $success = 'Project deleted.';
                 }
@@ -119,6 +145,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $error = $exception->getMessage();
         }
     }
+}
+
+$editId = filter_input(INPUT_GET, 'edit', FILTER_VALIDATE_INT);
+if ($editId) {
+    $statement = $pdo->prepare('SELECT * FROM projects WHERE id = ?');
+    $statement->execute([$editId]);
+    $editing = $statement->fetch();
 }
 
 $projects = $pdo->query('SELECT * FROM projects ORDER BY sort_order ASC, id DESC')->fetchAll();
@@ -147,42 +180,49 @@ $token = csrf_token();
     </div>
 
     <?php if ($error !== ''): ?>
-        <p class="admin-error"><?php echo escape_html($error); ?></p>
+        <p class="admin-error" role="alert"><?php echo escape_html($error); ?></p>
     <?php endif; ?>
     <?php if ($success !== ''): ?>
-        <p class="admin-success"><?php echo escape_html($success); ?></p>
+        <p class="admin-success" role="status"><?php echo escape_html($success); ?></p>
     <?php endif; ?>
 
     <section class="admin-form-card">
-        <h2>Add project</h2>
+        <h2><?php echo $editing ? 'Edit project' : 'Add project'; ?></h2>
         <form method="post" enctype="multipart/form-data">
             <input type="hidden" name="csrf_token" value="<?php echo escape_html($token); ?>">
             <input type="hidden" name="action" value="save">
+            <input type="hidden" name="id" value="<?php echo $editing ? (int) $editing['id'] : ''; ?>">
             <div class="admin-form-grid">
                 <label>Title
-                    <input type="text" name="title" maxlength="180" required>
+                    <input type="text" name="title" maxlength="180" required value="<?php echo escape_html($editing['title'] ?? ''); ?>">
                 </label>
                 <label>Project URL
-                    <input type="url" name="project_url" maxlength="500">
+                    <input type="url" name="project_url" maxlength="500" value="<?php echo escape_html($editing['project_url'] ?? ''); ?>">
                 </label>
                 <label>Technologies
-                    <input type="text" name="technologies" maxlength="500" placeholder="HTML, CSS, PHP">
+                    <input type="text" name="technologies" maxlength="500" placeholder="HTML, CSS, PHP" value="<?php echo escape_html($editing['technologies'] ?? ''); ?>">
                 </label>
                 <label>Sort order
-                    <input type="number" name="sort_order" value="0">
+                    <input type="number" name="sort_order" value="<?php echo (int) ($editing['sort_order'] ?? 0); ?>">
                 </label>
             </div>
             <label>Description
-                <textarea name="description" maxlength="5000" rows="5" required></textarea>
+                <textarea name="description" maxlength="5000" rows="5" required><?php echo escape_html($editing['description'] ?? ''); ?></textarea>
             </label>
+            <?php if (!empty($editing['image_path'])): ?>
+                <p>Current image: <?php echo escape_html($editing['image_path']); ?></p>
+            <?php endif; ?>
             <label>Project image
                 <input type="file" name="image" accept="image/jpeg,image/png,image/webp,image/gif">
             </label>
             <label class="admin-checkbox">
-                <input type="checkbox" name="is_visible" checked>
+                <input type="checkbox" name="is_visible" <?php echo !$editing || $editing['is_visible'] ? 'checked' : ''; ?>>
                 Visible on the website
             </label>
-            <button type="submit" class="admin-button">Add project</button>
+            <button type="submit" class="admin-button"><?php echo $editing ? 'Update project' : 'Add project'; ?></button>
+            <?php if ($editing): ?>
+                <a class="admin-button admin-button-light" href="projects.php">Cancel</a>
+            <?php endif; ?>
         </form>
     </section>
 
@@ -200,7 +240,8 @@ $token = csrf_token();
                         <td><?php echo escape_html($project['technologies']); ?></td>
                         <td><?php echo $project['is_visible'] ? 'Yes' : 'No'; ?></td>
                         <td>
-                            <form method="post" onsubmit="return confirm('Delete this project?');">
+                            <a class="admin-button admin-button-light" href="projects.php?edit=<?php echo (int) $project['id']; ?>">Edit</a>
+                            <form method="post" style="display:inline" onsubmit="return confirm('Delete this project?');">
                                 <input type="hidden" name="csrf_token" value="<?php echo escape_html($token); ?>">
                                 <input type="hidden" name="action" value="delete">
                                 <input type="hidden" name="id" value="<?php echo (int) $project['id']; ?>">

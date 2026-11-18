@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" role="img" aria-labelledby="title description">
+  <title id="title">Project image placeholder</title>
+  <desc id="description">A simple decorative placeholder for a project image.</desc>
+  <rect width="640" height="400" fill="#e8eef5"/>
+  <rect x="80" y="70" width="480" height="260" rx="20" fill="#ffffff" stroke="#b8c5d3" stroke-width="8"/>
+  <path d="M120 275l100-100 70 70 55-55 115 115H120z" fill="#9bb5ce"/>
+  <circle cx="420" cy="145" r="28" fill="#f2c879"/>
+</svg>
