@@ -2,18 +2,12 @@
    Joram Rusiana — Personal Portfolio
    script.js
 
-   This one file is loaded on every page.
-   Each feature checks whether the elements it
-   needs exist on the current page before doing
-   anything, so nothing breaks on pages that
-   don't have that feature.
-
-   Features in this file:
-   1. Mobile navigation toggle      (required)
-   2. Contact form validation       (required)
-   3. Dark / light mode + localStorage (chosen extra)
-   4. Scroll-to-top button          (chosen extra)
-   5. Typing effect on the Home page (chosen extra)
+   Features:
+   1. Mobile navigation toggle
+   2. Contact form validation
+   3. Dark / light mode + localStorage
+   4. Scroll-to-top button
+   5. Typing effect on the Home page
    ========================================= */
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -25,61 +19,39 @@ document.addEventListener("DOMContentLoaded", function () {
   setUpContactForm();
 });
 
-/* -----------------------------------------
-   Highlight the current page in the nav bar
------------------------------------------ */
 function highlightActiveNavLink() {
   var currentPage = window.location.pathname.split("/").pop() || "index.html";
-  var links = document.querySelectorAll(".nav-link");
-
-  links.forEach(function (link) {
-    var linkPage = link.getAttribute("href");
-    if (linkPage === currentPage) {
-      link.classList.add("active");
-    }
+  document.querySelectorAll(".nav-link").forEach(function (link) {
+    if (link.getAttribute("href") === currentPage) link.classList.add("active");
   });
 }
 
-/* -----------------------------------------
-   1. Mobile navigation toggle
-   Shows/hides the nav menu on small screens
------------------------------------------ */
 function setUpMobileNav() {
   var navToggle = document.getElementById("nav-toggle");
   var mainNav = document.getElementById("main-nav");
-
   if (!navToggle || !mainNav) return;
 
   navToggle.addEventListener("click", function () {
     mainNav.classList.toggle("open");
-
-    var isOpen = mainNav.classList.contains("open");
-    navToggle.setAttribute("aria-expanded", isOpen);
+    navToggle.setAttribute("aria-expanded", mainNav.classList.contains("open"));
   });
 
-  // Close the mobile menu after a link is tapped
   mainNav.querySelectorAll("a").forEach(function (link) {
     link.addEventListener("click", function () {
       mainNav.classList.remove("open");
+      navToggle.setAttribute("aria-expanded", "false");
     });
   });
 }
 
-/* -----------------------------------------
-   3. Dark / light mode toggle
-   Preference is saved in localStorage so it
-   is remembered the next time the page loads
------------------------------------------ */
 function setUpThemeToggle() {
   var themeToggle = document.getElementById("theme-toggle");
   if (!themeToggle) return;
 
   updateThemeButtonIcon();
-
   themeToggle.addEventListener("click", function () {
     var isDark = document.documentElement.getAttribute("data-theme") === "dark";
     var newTheme = isDark ? "light" : "dark";
-
     document.documentElement.setAttribute("data-theme", newTheme);
     localStorage.setItem("portfolio-theme", newTheme);
     updateThemeButtonIcon();
@@ -89,38 +61,21 @@ function setUpThemeToggle() {
 function updateThemeButtonIcon() {
   var themeToggle = document.getElementById("theme-toggle");
   if (!themeToggle) return;
-
-  var isDark = document.documentElement.getAttribute("data-theme") === "dark";
-  themeToggle.textContent = isDark ? "Light" : "Dark";
+  themeToggle.textContent = document.documentElement.getAttribute("data-theme") === "dark" ? "Light" : "Dark";
 }
 
-/* -----------------------------------------
-   4. Scroll-to-top button
-   Appears once the user scrolls down the page
-   and smoothly scrolls back up when clicked
------------------------------------------ */
 function setUpScrollToTop() {
   var scrollBtn = document.getElementById("scroll-top-btn");
   if (!scrollBtn) return;
 
   window.addEventListener("scroll", function () {
-    if (window.scrollY > 300) {
-      scrollBtn.classList.add("show");
-    } else {
-      scrollBtn.classList.remove("show");
-    }
+    scrollBtn.classList.toggle("show", window.scrollY > 300);
   });
-
   scrollBtn.addEventListener("click", function () {
     window.scrollTo({ top: 0, behavior: "smooth" });
   });
 }
 
-/* -----------------------------------------
-   5. Typing effect
-   Cycles through a list of roles on the
-   Home page hero section
------------------------------------------ */
 function setUpTypingEffect() {
   var typingEl = document.getElementById("typing-role");
   if (!typingEl) return;
@@ -132,73 +87,68 @@ function setUpTypingEffect() {
 
   function tick() {
     var currentRole = roles[roleIndex];
-
-    if (isDeleting) {
-      charIndex--;
-    } else {
-      charIndex++;
-    }
-
+    charIndex += isDeleting ? -1 : 1;
     typingEl.textContent = currentRole.substring(0, charIndex);
-
     var typingSpeed = isDeleting ? 45 : 90;
 
     if (!isDeleting && charIndex === currentRole.length) {
-      typingSpeed = 1400; // pause at the end of a word
+      typingSpeed = 1400;
       isDeleting = true;
     } else if (isDeleting && charIndex === 0) {
       isDeleting = false;
       roleIndex = (roleIndex + 1) % roles.length;
-      typingSpeed = 400; // pause before typing the next word
+      typingSpeed = 400;
     }
-
     setTimeout(tick, typingSpeed);
   }
-
   tick();
 }
 
-/* -----------------------------------------
-   2. Contact form validation
-   Checks each field, shows an inline error
-   message, and blocks submission until the
-   form is valid
------------------------------------------ */
 function setUpContactForm() {
   var form = document.getElementById("contact-form");
   if (!form) return;
 
-  var successMessage = document.getElementById("form-success");
-
+  var feedback = document.getElementById("form-success");
   form.addEventListener("submit", function (event) {
-    event.preventDefault();
-
     var isNameValid = validateRequired("name", "Please enter your name.");
     var isEmailValid = validateEmail("email");
     var isMessageValid = validateRequired("message", "Please enter a message.");
 
-    if (isNameValid && isEmailValid && isMessageValid) {
-      form.reset();
-      if (successMessage) {
-        successMessage.classList.add("show");
-        setTimeout(function () {
-          successMessage.classList.remove("show");
-        }, 4000);
+    if (!isNameValid || !isEmailValid || !isMessageValid) {
+      event.preventDefault();
+      return;
+    }
+
+    // Only the PHP contact endpoint can persist messages. Never display a
+    // success state or clear the fields for a static HTML form.
+    var action = form.getAttribute("action") || "";
+    var isPost = form.method.toUpperCase() === "POST";
+    var hasPhpEndpoint = /(^|\/)contact\.php(?:$|[?#])/i.test(action);
+    if (!isPost || !hasPhpEndpoint) {
+      event.preventDefault();
+      if (feedback) {
+        feedback.textContent = "This form cannot save messages on this static page. Please open the PHP-enabled portfolio site to send your message.";
+        feedback.classList.add("show");
+        feedback.setAttribute("role", "alert");
       }
+      return;
+    }
+
+    // Let the browser submit the form to contact.php. The server will render
+    // the real success or validation message after processing it.
+    var submitButton = form.querySelector('button[type="submit"]');
+    if (submitButton) {
+      submitButton.disabled = true;
+      submitButton.textContent = "Sending…";
     }
   });
 
-  // Re-check a field as soon as the user fixes it
   ["name", "email", "message"].forEach(function (fieldId) {
     var field = document.getElementById(fieldId);
     if (!field) return;
-
     field.addEventListener("input", function () {
-      if (fieldId === "email") {
-        validateEmail(fieldId);
-      } else {
-        validateRequired(fieldId, "This field is required.");
-      }
+      if (fieldId === "email") validateEmail(fieldId);
+      else validateRequired(fieldId, "This field is required.");
     });
   });
 }
@@ -206,13 +156,13 @@ function setUpContactForm() {
 function validateRequired(fieldId, message) {
   var field = document.getElementById(fieldId);
   var errorEl = document.getElementById(fieldId + "-error");
+  if (!field) return true;
   var value = field.value.trim();
 
   if (value === "") {
     showFieldError(field, errorEl, message);
     return false;
   }
-
   clearFieldError(field, errorEl);
   return true;
 }
@@ -220,6 +170,7 @@ function validateRequired(fieldId, message) {
 function validateEmail(fieldId) {
   var field = document.getElementById(fieldId);
   var errorEl = document.getElementById(fieldId + "-error");
+  if (!field) return true;
   var value = field.value.trim();
   var emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -227,12 +178,10 @@ function validateEmail(fieldId) {
     showFieldError(field, errorEl, "Please enter your email.");
     return false;
   }
-
   if (!emailPattern.test(value)) {
     showFieldError(field, errorEl, "Please enter a valid email address.");
     return false;
   }
-
   clearFieldError(field, errorEl);
   return true;
 }
