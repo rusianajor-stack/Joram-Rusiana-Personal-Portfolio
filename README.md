@@ -10,10 +10,20 @@ A PHP and MySQL portfolio with a public website and authenticated admin dashboar
 
 ## Database setup
 
-1. Create a MySQL database and database user.
-2. Import `database/portfolio.sql`.
-3. Set `DB_HOST`, `DB_NAME`, `DB_USER`, and `DB_PASSWORD` in the PHP hosting environment.
+1. Create a MySQL database and a database user with access to it.
+2. Import `database/portfolio.sql` into that database.
+3. Set `DB_HOST`, `DB_NAME`, `DB_USER`, and `DB_PASSWORD` in the PHP hosting environment. Do not commit credentials.
 4. Create an administrator row in `admin_users` using a PHP `password_hash()` password hash.
+
+### Existing installations
+
+For installations created before the Education, Experience, Achievements, and website settings modules were added, import:
+
+```text
+database/migrations/2026-11-18-portfolio-modules.sql
+```
+
+The migration uses `CREATE TABLE IF NOT EXISTS` and does not replace existing data.
 
 ## Administrator features
 
@@ -32,4 +42,4 @@ Images are restricted to verified JPG, PNG, and WEBP files, and project uploads 
 
 ## Development
 
-The static HTML pages are retained as legacy assets. PHP pages provide the database-backed public site, and the admin area is available under `/admin/login.php`.
+The existing HTML pages and assets are retained as legacy assets. PHP pages provide the database-backed public site, and the admin area is available under `/admin/login.php`.
