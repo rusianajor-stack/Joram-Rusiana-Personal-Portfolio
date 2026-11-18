@@ -31,14 +31,17 @@
     margin: 0 0 12px;
 }
 
-.admin-login-card label {
+.admin-login-card label,
+.admin-form-card label {
     display: grid;
     gap: 8px;
     margin: 18px 0;
     font-weight: 600;
 }
 
-.admin-login-card input {
+.admin-login-card input,
+.admin-form-card input,
+.admin-form-card textarea {
     width: 100%;
     padding: 12px;
     border: 1px solid #cbd2df;
@@ -73,11 +76,20 @@
     color: #202638;
 }
 
-.admin-error {
+.admin-error,
+.admin-success {
     padding: 12px;
     border-radius: 8px;
+}
+
+.admin-error {
     background: #fff0ef;
     color: #a22d22;
+}
+
+.admin-success {
+    background: #edf8ef;
+    color: #27703a;
 }
 
 .admin-header {
@@ -102,6 +114,10 @@
     display: flex;
     align-items: center;
     gap: 14px;
+}
+
+.admin-account a {
+    color: #3858d6;
 }
 
 .admin-main {
@@ -142,7 +158,9 @@
 
 .admin-stat-card,
 .admin-notice,
-.admin-shortcuts {
+.admin-shortcuts,
+.admin-form-card,
+.admin-table-card {
     padding: 22px;
     border: 1px solid #e3e7ef;
     border-radius: 12px;
@@ -163,14 +181,69 @@
 }
 
 .admin-notice,
-.admin-shortcuts {
+.admin-shortcuts,
+.admin-table-card {
     margin-top: 20px;
 }
 
 .admin-notice h2,
-.admin-shortcuts h2 {
+.admin-shortcuts h2,
+.admin-form-card h2,
+.admin-table-card h2 {
     margin: 0 0 8px;
     font-size: 1.1rem;
+}
+
+.admin-shortcut-list {
+    margin-top: 14px;
+}
+
+.admin-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.admin-form-card textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+.admin-checkbox {
+    display: flex !important;
+    grid-template-columns: none;
+    align-items: center;
+    gap: 8px !important;
+}
+
+.admin-checkbox input {
+    width: auto;
+}
+
+.admin-table-wrap {
+    overflow-x: auto;
+}
+
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.admin-table th,
+.admin-table td {
+    padding: 12px;
+    border-bottom: 1px solid #e5e8ef;
+    text-align: left;
+}
+
+.admin-danger-button {
+    min-height: 36px;
+    padding: 8px 12px;
+    border: 0;
+    border-radius: 7px;
+    background: #b42318;
+    color: #fff;
+    cursor: pointer;
 }
 
 @media (max-width: 700px) {
@@ -185,7 +258,15 @@
         justify-content: space-between;
     }
 
-    .admin-stats {
+    .admin-stats,
+    .admin-form-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 480px) {
+    .admin-stats,
+    .admin-form-grid {
+        grid-template-columns: 1fr;
     }
 }
