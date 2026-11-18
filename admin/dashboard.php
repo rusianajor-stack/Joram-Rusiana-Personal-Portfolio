@@ -56,8 +56,10 @@ $token = csrf_token();
     <nav class="admin-shortcuts" aria-label="Content management">
         <h2>Content management</h2>
         <div class="admin-shortcut-list">
+            <a class="admin-button" href="profile.php">Manage profile</a>
             <a class="admin-button" href="projects.php">Manage projects</a>
             <a class="admin-button" href="skills.php">Manage skills</a>
+            <a class="admin-button" href="messages.php">Manage messages</a>
         </div>
     </nav>
 </main>
