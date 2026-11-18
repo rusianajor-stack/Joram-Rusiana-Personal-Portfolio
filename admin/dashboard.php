@@ -10,6 +10,8 @@ $counts = [
     'Skills' => (int) $pdo->query('SELECT COUNT(*) FROM skills')->fetchColumn(),
     'Messages' => (int) $pdo->query('SELECT COUNT(*) FROM contact_messages')->fetchColumn(),
     'Experience' => (int) $pdo->query('SELECT COUNT(*) FROM experience')->fetchColumn(),
+    'Education' => (int) $pdo->query('SELECT COUNT(*) FROM education')->fetchColumn(),
+    'Achievements' => (int) $pdo->query('SELECT COUNT(*) FROM achievements')->fetchColumn(),
 ];
 
 $unreadMessages = (int) $pdo->query('SELECT COUNT(*) FROM contact_messages WHERE is_read = 0')->fetchColumn();
@@ -43,7 +45,7 @@ $token = csrf_token();
             <h1>Dashboard</h1>
             <p>Welcome back. Here is a summary of your portfolio content.</p>
         </div>
-        <a class="admin-button" href="../index.html" target="_blank" rel="noopener noreferrer">View website</a>
+        <a class="admin-button" href="../index.php" target="_blank" rel="noopener noreferrer">View website</a>
     </div>
     <section class="admin-stats" aria-label="Portfolio statistics">
         <?php foreach ($counts as $label => $count): ?>
@@ -59,7 +61,11 @@ $token = csrf_token();
             <a class="admin-button" href="profile.php">Manage profile</a>
             <a class="admin-button" href="projects.php">Manage projects</a>
             <a class="admin-button" href="skills.php">Manage skills</a>
+            <a class="admin-button" href="education.php">Manage education</a>
+            <a class="admin-button" href="experience.php">Manage experience</a>
+            <a class="admin-button" href="achievements.php">Manage achievements</a>
             <a class="admin-button" href="messages.php">Manage messages</a>
+            <a class="admin-button" href="settings.php">Website settings</a>
         </div>
     </nav>
 </main>
