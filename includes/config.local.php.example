@@ -4,6 +4,7 @@
 // Never commit config.local.php.
 return [
     'DB_HOST' => 'sqlXXX.infinityfree.com',
+    'DB_PORT' => 3306,
     'DB_NAME' => 'if0_XXXX_portfolio',
     'DB_USER' => 'if0_XXXX',
     'DB_PASSWORD' => '',
