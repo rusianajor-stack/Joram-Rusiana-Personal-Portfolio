@@ -4,6 +4,9 @@ require_once __DIR__ . '/includes/security.php';
 require_once __DIR__ . '/includes/db.php';
 
 try {
+    $profileStatement = $pdo->prepare('SELECT full_name FROM profile WHERE id = 1');
+    $profileStatement->execute();
+    $profile = $profileStatement->fetch();
     $projects = $pdo->query(
         'SELECT title, description, technologies, image_path, project_url
          FROM projects
@@ -12,8 +15,13 @@ try {
     )->fetchAll();
 } catch (PDOException $error) {
     error_log($error->getMessage());
+    $profile = false;
     $projects = [];
 }
+$profileName = is_array($profile) ? ($profile['full_name'] ?? 'Joram Rusiana') : 'Joram Rusiana';
+$siteTitle = get_setting($pdo, 'site_title', $profileName . ' — Personal Portfolio');
+$accentColor = get_setting($pdo, 'accent_color', '#ff7a00');
+$siteLogo = get_setting($pdo, 'site_logo', '');
 
 function project_image(?string $path): string
 {
@@ -32,8 +40,9 @@ function project_technologies(?string $technologies): array
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Projects — Joram Rusiana</title>
+<title>Projects — <?php echo escape_html($siteTitle); ?></title>
 <link rel="stylesheet" href="css/style.css">
+<style>:root { --accent: <?php echo escape_html($accentColor); ?>; }</style>
 <script>
   (function () {
     var savedTheme = localStorage.getItem('portfolio-theme');
@@ -44,7 +53,7 @@ function project_technologies(?string $technologies): array
 <body>
 <header>
   <div class="nav-inner wrap">
-    <a href="index.php" class="logo">Joram Rusiana</a>
+    <a href="index.php" class="logo"><?php echo $siteLogo !== '' ? '<img src="' . escape_html($siteLogo) . '" alt="' . escape_html($siteTitle) . '" style="max-height:42px">' : escape_html($profileName); ?></a>
     <nav id="main-nav">
       <ul>
         <li><a href="index.php" class="nav-link">Home</a></li>
@@ -99,7 +108,7 @@ function project_technologies(?string $technologies): array
 </main>
 <footer>
   <div class="wrap footer-inner">
-    <p>&copy; 2026 Joram Rusiana. All Rights Reserved.</p>
+    <p>&copy; 2026 <?php echo escape_html($profileName); ?>. All Rights Reserved.</p>
     <ul class="social-links">
       <li><a href="contact.php">Facebook</a></li>
       <li><a href="contact.php">Instagram</a></li>

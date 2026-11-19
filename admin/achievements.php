@@ -12,12 +12,27 @@ function upload_achievement_image(): string
 {
     if (empty($_FILES['image']['name']) || $_FILES['image']['error'] === UPLOAD_ERR_NO_FILE) return '';
     if ($_FILES['image']['error'] !== UPLOAD_ERR_OK) throw new RuntimeException('The image could not be uploaded.');
-    if ($_FILES['image']['size'] > 2 * 1024 * 1024) throw new RuntimeException('The image must be 2 MB or smaller.');
-    $info = getimagesize($_FILES['image']['tmp_name']);
-    if ($info === false) throw new RuntimeException('Only valid image files are allowed.');
+    if ($_FILES['image']['size'] > 5 * 1024 * 1024) throw new RuntimeException('The file must be 5 MB or smaller.');
+
+    $mime = '';
+    if (class_exists('finfo')) {
+        $finfo = new finfo(FILEINFO_MIME_TYPE);
+        $mime = $finfo->file($_FILES['image']['tmp_name']) ?: '';
+    }
+
     $types = ['image/jpeg' => 'jpg', 'image/png' => 'png', 'image/webp' => 'webp', 'image/gif' => 'gif'];
-    $mime = $info['mime'] ?? '';
-    if (!isset($types[$mime])) throw new RuntimeException('Use JPG, PNG, WEBP, or GIF images.');
+    $types['application/pdf'] = 'pdf';
+    if ($mime === 'application/pdf') {
+        $handle = fopen($_FILES['image']['tmp_name'], 'rb');
+        $header = $handle ? fread($handle, 5) : '';
+        if ($handle) fclose($handle);
+        if ($header !== '%PDF-') throw new RuntimeException('Only valid PDF or image files are allowed.');
+    } else {
+        $info = getimagesize($_FILES['image']['tmp_name']);
+        if ($info === false) throw new RuntimeException('Only valid PDF or image files are allowed.');
+        $mime = $info['mime'] ?? '';
+    }
+    if (!isset($types[$mime])) throw new RuntimeException('Use JPG, PNG, WEBP, GIF, or PDF files.');
     $directory = __DIR__ . '/../uploads/achievements';
     if (!is_dir($directory) && !mkdir($directory, 0755, true)) throw new RuntimeException('The upload directory could not be created.');
     $fileName = bin2hex(random_bytes(16)) . '.' . $types[$mime];
@@ -74,6 +89,6 @@ $token = csrf_token();
 <?php if ($error): ?><p class="admin-error"><?php echo escape_html($error); ?></p><?php endif; ?><?php if ($success): ?><p class="admin-success"><?php echo escape_html($success); ?></p><?php endif; ?>
 <section class="admin-form-card"><h2><?php echo $editing ? 'Edit achievement' : 'Add achievement'; ?></h2><form method="post" enctype="multipart/form-data"><input type="hidden" name="csrf_token" value="<?php echo escape_html($token); ?>"><input type="hidden" name="action" value="save"><input type="hidden" name="id" value="<?php echo $editing ? (int) $editing['id'] : ''; ?>">
 <div class="admin-form-grid"><label>Title<input type="text" name="title" maxlength="180" required value="<?php echo escape_html($editing['title'] ?? ''); ?>"></label><label>Organization<input type="text" name="organization" maxlength="180" value="<?php echo escape_html($editing['organization'] ?? ''); ?>"></label><label>Achievement date<input type="date" name="achievement_date" value="<?php echo escape_html($editing['achievement_date'] ?? ''); ?>"></label><label>Sort order<input type="number" name="sort_order" value="<?php echo (int) ($editing['sort_order'] ?? 0); ?>"></label></div>
-<label>Details<textarea name="details" maxlength="5000" rows="5"><?php echo escape_html($editing['details'] ?? ''); ?></textarea></label><label>Certificate or achievement image<input type="file" name="image" accept="image/jpeg,image/png,image/webp,image/gif,application/pdf"></label><button type="submit" class="admin-button"><?php echo $editing ? 'Update achievement' : 'Add achievement'; ?></button><?php if ($editing): ?> <a class="admin-button admin-button-light" href="achievements.php">Cancel</a><?php endif; ?></form></section>
+<label>Details<textarea name="details" maxlength="5000" rows="5"><?php echo escape_html($editing['details'] ?? ''); ?></textarea></label><label>Certificate or achievement file<input type="file" name="image" accept="image/jpeg,image/png,image/webp,image/gif,application/pdf"></label><button type="submit" class="admin-button"><?php echo $editing ? 'Update achievement' : 'Add achievement'; ?></button><?php if ($editing): ?> <a class="admin-button admin-button-light" href="achievements.php">Cancel</a><?php endif; ?></form></section>
 <section class="admin-table-card"><h2>Existing achievements</h2><div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>Title</th><th>Organization</th><th>Actions</th></tr></thead><tbody><?php foreach ($rows as $row): ?><tr><td><?php echo escape_html($row['title']); ?></td><td><?php echo escape_html($row['organization']); ?></td><td><a class="admin-button admin-button-light" href="achievements.php?edit=<?php echo (int) $row['id']; ?>">Edit</a><form method="post" style="display:inline" onsubmit="return confirm('Delete this achievement?');"><input type="hidden" name="csrf_token" value="<?php echo escape_html($token); ?>"><input type="hidden" name="action" value="delete"><input type="hidden" name="id" value="<?php echo (int) $row['id']; ?>"><button type="submit" class="admin-danger-button">Delete</button></form></td></tr><?php endforeach; ?></tbody></table></div></section>
 </main></body></html>

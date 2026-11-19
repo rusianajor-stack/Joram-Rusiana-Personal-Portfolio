@@ -17,20 +17,24 @@ try {
 if (!$profile) {
     $profile = ['full_name' => 'Joram Rusiana', 'headline' => 'BSIT Student', 'introduction' => 'I am interested in technology, web development, and creative digital projects.', 'biography' => 'I enjoy learning new skills and improving my knowledge through school activities and projects.', 'email' => 'rusianajor@gmail.com', 'location' => 'Negros Oriental, Philippines'];
 }
+$siteTitle = get_setting($pdo, 'site_title', $profile['full_name'] . ' — Personal Portfolio');
+$accentColor = get_setting($pdo, 'accent_color', '#ff7a00');
+$siteLogo = get_setting($pdo, 'site_logo', '');
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>About — <?php echo escape_html($profile['full_name']); ?></title>
+<title>About — <?php echo escape_html($siteTitle); ?></title>
 <link rel="stylesheet" href="css/style.css">
+<style>:root { --accent: <?php echo escape_html($accentColor); ?>; }</style>
 <script>(function(){if(localStorage.getItem('portfolio-theme')==='dark')document.documentElement.setAttribute('data-theme','dark');})();</script>
 </head>
 <body>
 <header>
   <div class="nav-inner wrap">
-    <a href="index.php" class="logo"><?php echo escape_html($profile['full_name']); ?></a>
+    <a href="index.php" class="logo"><?php echo $siteLogo !== '' ? '<img src="' . escape_html($siteLogo) . '" alt="' . escape_html($siteTitle) . '" style="max-height:42px">' : escape_html($profile['full_name']); ?></a>
     <nav id="main-nav"><ul>
       <li><a href="index.php" class="nav-link">Home</a></li><li><a href="about.php" class="nav-link active">About</a></li>
       <li><a href="skills.php" class="nav-link">Skills</a></li><li><a href="projects.php" class="nav-link">Projects</a></li>

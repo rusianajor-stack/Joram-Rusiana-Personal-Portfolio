@@ -19,6 +19,9 @@ try {
 }
 
 if (!$profile) $profile = ['full_name' => 'Joram Rusiana', 'headline' => 'BSIT Student', 'email' => 'rusianajor@gmail.com', 'phone' => '', 'location' => 'Negros Oriental, Philippines'];
+$siteTitle = get_setting($pdo, 'site_title', $profile['full_name'] . ' — Personal Portfolio');
+$accentColor = get_setting($pdo, 'accent_color', '#ff7a00');
+$siteLogo = get_setting($pdo, 'site_logo', '');
 
 function resume_date(?string $date): string
 {
@@ -27,24 +30,17 @@ function resume_date(?string $date): string
     return $timestamp ? date('F Y', $timestamp) : '';
 }
 
-$certificates = [
-    ['IT Customer Support Basics', 'September 2026', 'certificate/IT_Customer_Support_Basics_certificate_rusianajor-gmail-com_e859062d-60d0-4604-bc86-24d7bbd7f6bc.pdf'],
-    ['Computer Hardware Basics', 'September 2026', 'certificate/Computer_Hardware_Basics_certificate_rusianajor-gmail-com_4a7c3c27-fbe7-4cc9-b119-82af0a9df2dc.pdf'],
-    ['AI for Business Professionals', 'September 2026', 'certificate/AI for Business Professionals.pdf'],
-    ['Digital Awareness', 'September 2026', 'certificate/Digital_Awareness_certificate_rusianajor-gmail-com_31a97fc7-4949-49d2-9e7d-bdbf6b51c9ac.pdf'],
-    ['Introduction to Modern AI', 'August 2026', 'certificate/Introduction_to_Modern_AI_certificate_rusianajor-gmail-com_4a01f6f2-3aaa-4015-a8fe-db469da23822.pdf'],
-    ['Network Addressing and Basic Troubleshooting', 'April 2026', 'certificate/Network_Addressing_and_Basic_Troubleshooting_certificate_rusianajor-gmail-com_39965394-1107-493e-b1f7-e27c98385092.pdf'],
-];
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Resume — <?php echo escape_html($profile['full_name']); ?></title><link rel="stylesheet" href="css/style.css">
+<title>Resume — <?php echo escape_html($siteTitle); ?></title><link rel="stylesheet" href="css/style.css">
+<style>:root { --accent: <?php echo escape_html($accentColor); ?>; }</style>
 <script>(function(){if(localStorage.getItem('portfolio-theme')==='dark')document.documentElement.setAttribute('data-theme','dark');})();</script>
 </head>
 <body>
-<header><div class="nav-inner wrap"><a href="index.php" class="logo"><?php echo escape_html($profile['full_name']); ?></a><nav id="main-nav"><ul>
+<header><div class="nav-inner wrap"><a href="index.php" class="logo"><?php echo $siteLogo !== '' ? '<img src="' . escape_html($siteLogo) . '" alt="' . escape_html($siteTitle) . '" style="max-height:42px">' : escape_html($profile['full_name']); ?></a><nav id="main-nav"><ul>
 <li><a href="index.php" class="nav-link">Home</a></li><li><a href="about.php" class="nav-link">About</a></li><li><a href="skills.php" class="nav-link">Skills</a></li><li><a href="projects.php" class="nav-link">Projects</a></li><li><a href="resume.php" class="nav-link active">Resume</a></li><li><a href="contact.php" class="nav-link">Contact</a></li>
 </ul></nav><div class="nav-controls"><button id="theme-toggle" aria-label="Toggle dark mode">Dark</button><button id="nav-toggle" aria-label="Toggle menu" aria-expanded="false">Menu</button></div></div></header>
 <main>
@@ -61,11 +57,9 @@ $certificates = [
   </div></section>
   <section id="achievements"><div class="wrap"><h2>Achievements &amp; Certificates</h2>
     <?php if ($achievements): ?><ul class="timeline">
-      <?php foreach ($achievements as $item): ?><li><h3><?php echo escape_html($item['title']); ?></h3><?php if (!empty($item['organization'])): ?><span><?php echo escape_html($item['organization']); ?></span><?php endif; ?><?php if (!empty($item['achievement_date'])): ?><p class="resume-date"><?php echo escape_html(resume_date($item['achievement_date'])); ?></p><?php endif; ?><?php if (!empty($item['details'])): ?><p><?php echo nl2br(escape_html($item['details'])); ?></p><?php endif; ?><?php if (!empty($item['image_path'])): ?><img class="achievement-image" src="<?php echo escape_html($item['image_path']); ?>" alt="<?php echo escape_html($item['title']); ?> certificate or achievement image" loading="lazy"><?php endif; ?></li><?php endforeach; ?>
-    </ul><?php endif; ?>
-    <ul class="timeline">
-      <?php foreach ($certificates as [$title, $date, $path]): ?><li><h3><?php echo escape_html($title); ?></h3><span><?php echo escape_html($date); ?></span><p><a href="<?php echo escape_html($path); ?>" target="_blank" rel="noopener noreferrer">View Certificate</a></p></li><?php endforeach; ?>
+      <?php foreach ($achievements as $item): ?><li><h3><?php echo escape_html($item['title']); ?></h3><?php if (!empty($item['organization'])): ?><span><?php echo escape_html($item['organization']); ?></span><?php endif; ?><?php if (!empty($item['achievement_date'])): ?><p class="resume-date"><?php echo escape_html(resume_date($item['achievement_date'])); ?></p><?php endif; ?><?php if (!empty($item['details'])): ?><p><?php echo nl2br(escape_html($item['details'])); ?></p><?php endif; ?><?php if (!empty($item['image_path'])): ?><?php if (str_ends_with(strtolower($item['image_path']), '.pdf')): ?><p><a href="<?php echo escape_html($item['image_path']); ?>" target="_blank" rel="noopener noreferrer">View Certificate</a></p><?php else: ?><img class="achievement-image" src="<?php echo escape_html($item['image_path']); ?>" alt="<?php echo escape_html($item['title']); ?> certificate or achievement image" loading="lazy"><?php endif; ?><?php endif; ?></li><?php endforeach; ?>
     </ul>
+    <?php endif; ?>
   </div></section>
 </main>
 <footer><div class="wrap footer-inner"><p>&copy; 2026 <?php echo escape_html($profile['full_name']); ?>. All Rights Reserved.</p><ul class="social-links"><li><a href="contact.php">Facebook</a></li><li><a href="contact.php">Instagram</a></li><li><a href="contact.php">LinkedIn</a></li></ul></div></footer>

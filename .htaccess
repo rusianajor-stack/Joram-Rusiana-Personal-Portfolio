@@ -20,3 +20,11 @@ DirectoryIndex index.php index.html
         Header set Cache-Control "no-cache, no-store, must-revalidate"
     </Files>
 </IfModule>
+
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType image/jpeg "access plus 7 days"
+    ExpiresByType image/png "access plus 7 days"
+    ExpiresByType image/webp "access plus 7 days"
+    ExpiresByType image/gif "access plus 7 days"
+</IfModule>

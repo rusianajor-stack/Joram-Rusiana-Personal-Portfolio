@@ -5,3 +5,4 @@ config.local.php
 /vendor/
 /uploads/*
 !/uploads/.gitkeep
+includes/config.local.php

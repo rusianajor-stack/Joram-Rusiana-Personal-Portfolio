@@ -59,6 +59,7 @@ $token = csrf_token();
         <p>Choose a section to create, edit, or organize portfolio information.</p>
         <div class="admin-shortcut-list">
             <a class="admin-button" href="profile.php">Profile</a>
+            <a class="admin-button" href="settings.php">Website Settings</a>
             <a class="admin-button" href="projects.php">Projects</a>
             <a class="admin-button" href="skills.php">Skills</a>
             <a class="admin-button" href="education.php">Education</a>

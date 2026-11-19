@@ -97,6 +97,13 @@ CREATE TABLE IF NOT EXISTS login_attempts (
     INDEX login_attempt_window (email, ip_address, attempted_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+CREATE TABLE IF NOT EXISTS contact_attempts (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    ip_address VARCHAR(45) NOT NULL,
+    attempted_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    INDEX contact_attempt_window (ip_address, attempted_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 INSERT INTO profile (id, full_name, headline, introduction, biography)
 VALUES (
     1,
@@ -108,8 +115,20 @@ VALUES (
 ON DUPLICATE KEY UPDATE id = id;
 
 INSERT INTO website_settings (setting_key, setting_value)
-VALUES ('site_title', 'Joram Rusiana — Personal Portfolio')
+VALUES
+('site_title', 'Joram Rusiana — Personal Portfolio'),
+('accent_color', '#ff7a00'),
+('site_logo', '')
 ON DUPLICATE KEY UPDATE setting_key = setting_key;
+
+INSERT INTO education (institution, qualification, details, start_date, end_date, sort_order) VALUES
+('Negros Oriental State University – Bayawan–Sta. Catalina Campus', 'Bachelor of Science in Information Technology (BSIT)', 'Currently pursuing a Bachelor of Science in Information Technology.', '2024-08-01', NULL, 1),
+('Basay National High School', 'Secondary Education', 'Completed secondary education.', '2018-06-01', '2024-04-30', 2);
+
+INSERT INTO experience (title, organization, details, start_date, end_date, sort_order) VALUES
+('ITS 300 — Web Development Coursework', 'Negros Oriental State University', 'Built portfolio and web development projects using HTML, CSS, JavaScript, PHP, and MySQL.', '2024-08-01', NULL, 1),
+('Database Management Coursework', 'Negros Oriental State University', 'Practiced database design and SQL queries as part of the BSIT curriculum.', '2024-08-01', NULL, 2),
+('Adobe Animate Workshops', 'Negros Oriental State University', 'Practiced squash-and-stretch, slow-in/slow-out, motion paths, and animation projects.', '2024-08-01', NULL, 3);
 
 INSERT INTO skills (name, category, description, level_label, level_percent, sort_order) VALUES
 ('HTML & CSS', 'Web Development', 'Building structured, styled web pages with clean layouts and responsive designs.', 'Proficient', 70, 1),

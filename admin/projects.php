@@ -7,6 +7,7 @@ require_login();
 
 $error = '';
 $success = '';
+$editing = null;
 
 function upload_project_image(): string
 {
@@ -121,6 +122,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
+$editId = filter_input(INPUT_GET, 'edit', FILTER_VALIDATE_INT);
+if ($editId) {
+    $statement = $pdo->prepare('SELECT * FROM projects WHERE id = ?');
+    $statement->execute([$editId]);
+    $editing = $statement->fetch();
+}
+
 $projects = $pdo->query('SELECT * FROM projects ORDER BY sort_order ASC, id DESC')->fetchAll();
 $token = csrf_token();
 ?>
@@ -154,35 +162,37 @@ $token = csrf_token();
     <?php endif; ?>
 
     <section class="admin-form-card">
-        <h2>Add project</h2>
+        <h2><?php echo $editing ? 'Edit project' : 'Add project'; ?></h2>
         <form method="post" enctype="multipart/form-data">
             <input type="hidden" name="csrf_token" value="<?php echo escape_html($token); ?>">
             <input type="hidden" name="action" value="save">
+            <input type="hidden" name="id" value="<?php echo $editing ? (int) $editing['id'] : ''; ?>">
             <div class="admin-form-grid">
                 <label>Title
-                    <input type="text" name="title" maxlength="180" required>
+                    <input type="text" name="title" maxlength="180" required value="<?php echo escape_html($editing['title'] ?? ''); ?>">
                 </label>
                 <label>Project URL
-                    <input type="url" name="project_url" maxlength="500">
+                    <input type="url" name="project_url" maxlength="500" value="<?php echo escape_html($editing['project_url'] ?? ''); ?>">
                 </label>
                 <label>Technologies
-                    <input type="text" name="technologies" maxlength="500" placeholder="HTML, CSS, PHP">
+                    <input type="text" name="technologies" maxlength="500" placeholder="HTML, CSS, PHP" value="<?php echo escape_html($editing['technologies'] ?? ''); ?>">
                 </label>
                 <label>Sort order
-                    <input type="number" name="sort_order" value="0">
+                    <input type="number" name="sort_order" value="<?php echo (int) ($editing['sort_order'] ?? 0); ?>">
                 </label>
             </div>
             <label>Description
-                <textarea name="description" maxlength="5000" rows="5" required></textarea>
+                <textarea name="description" maxlength="5000" rows="5" required><?php echo escape_html($editing['description'] ?? ''); ?></textarea>
             </label>
             <label>Project image
                 <input type="file" name="image" accept="image/jpeg,image/png,image/webp,image/gif">
             </label>
             <label class="admin-checkbox">
-                <input type="checkbox" name="is_visible" checked>
+                <input type="checkbox" name="is_visible" <?php echo $editing ? ($editing['is_visible'] ? 'checked' : '') : 'checked'; ?>>
                 Visible on the website
             </label>
-            <button type="submit" class="admin-button">Add project</button>
+            <button type="submit" class="admin-button"><?php echo $editing ? 'Update project' : 'Add project'; ?></button>
+            <?php if ($editing): ?> <a class="admin-button admin-button-light" href="projects.php">Cancel</a><?php endif; ?>
         </form>
     </section>
 
@@ -200,6 +210,7 @@ $token = csrf_token();
                         <td><?php echo escape_html($project['technologies']); ?></td>
                         <td><?php echo $project['is_visible'] ? 'Yes' : 'No'; ?></td>
                         <td>
+                            <a class="admin-button admin-button-light" href="projects.php?edit=<?php echo (int) $project['id']; ?>">Edit</a>
                             <form method="post" onsubmit="return confirm('Delete this project?');">
                                 <input type="hidden" name="csrf_token" value="<?php echo escape_html($token); ?>">
                                 <input type="hidden" name="action" value="delete">

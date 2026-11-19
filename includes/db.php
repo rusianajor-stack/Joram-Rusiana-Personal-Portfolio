@@ -1,9 +1,15 @@
 <?php
 
-$host = getenv('DB_HOST');
-$database = getenv('DB_NAME');
-$username = getenv('DB_USER');
-$password = getenv('DB_PASSWORD');
+$config = [];
+$configFile = __DIR__ . '/config.local.php';
+if (is_file($configFile)) {
+    $config = require $configFile;
+}
+
+$host = getenv('DB_HOST') ?: ($config['DB_HOST'] ?? '');
+$database = getenv('DB_NAME') ?: ($config['DB_NAME'] ?? '');
+$username = getenv('DB_USER') ?: ($config['DB_USER'] ?? '');
+$password = getenv('DB_PASSWORD') ?: ($config['DB_PASSWORD'] ?? '');
 
 if (!$host || !$database || !$username) {
     throw new RuntimeException('Database settings are missing. Set DB_HOST, DB_NAME, DB_USER, and DB_PASSWORD.');

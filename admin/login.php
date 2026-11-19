@@ -26,8 +26,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $admin = $statement->fetch();
 
             $isLocked = $admin && $admin['locked_until'] && strtotime($admin['locked_until']) > time();
+            $ipStatement = $pdo->prepare(
+                'SELECT COUNT(*) FROM login_attempts
+                 WHERE ip_address = ? AND attempted_at >= DATE_SUB(NOW(), INTERVAL 15 MINUTE)'
+            );
+            $ipStatement->execute([$ipAddress]);
+            $ipLocked = (int) $ipStatement->fetchColumn() >= 10;
 
-            if ($isLocked) {
+            if ($isLocked || $ipLocked) {
                 $error = 'Too many login attempts. Please try again later.';
             } elseif ($admin && password_verify($password, $admin['password_hash'])) {
                 $update = $pdo->prepare('UPDATE admin_users SET failed_attempts = 0, locked_until = NULL WHERE id = ?');
@@ -36,6 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 session_regenerate_id(true);
                 $_SESSION['admin_id'] = $admin['id'];
                 $_SESSION['admin_email'] = $admin['email'];
+                $_SESSION['last_activity'] = time();
                 header('Location: dashboard.php');
                 exit;
             } else {

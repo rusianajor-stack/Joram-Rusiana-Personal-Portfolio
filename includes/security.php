@@ -37,3 +37,17 @@ function escape_html(?string $value): string
 {
     return htmlspecialchars($value ?? '', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 }
+
+function get_setting(PDO $pdo, string $key, string $default = ''): string
+{
+    static $cache = [];
+    if (array_key_exists($key, $cache)) {
+        return $cache[$key];
+    }
+
+    $statement = $pdo->prepare('SELECT setting_value FROM website_settings WHERE setting_key = ?');
+    $statement->execute([$key]);
+    $value = $statement->fetchColumn();
+    $cache[$key] = $value === false ? $default : (string) $value;
+    return $cache[$key];
+}

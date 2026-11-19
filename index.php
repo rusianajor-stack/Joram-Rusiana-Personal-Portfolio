@@ -22,18 +22,22 @@ if (!$profile) {
     ];
 }
 $profileImage = !empty($profile['profile_image']) ? $profile['profile_image'] : 'images/avatar.svg';
+$siteTitle = get_setting($pdo, 'site_title', $profile['full_name'] . ' — Personal Portfolio');
+$accentColor = get_setting($pdo, 'accent_color', '#ff7a00');
+$siteLogo = get_setting($pdo, 'site_logo', '');
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title><?php echo escape_html($profile['full_name']); ?> — Personal Portfolio</title>
+<title><?php echo escape_html($siteTitle); ?></title>
 <link rel="stylesheet" href="css/style.css?v=20261119-1">
+<style>:root { --accent: <?php echo escape_html($accentColor); ?>; }</style>
 <script>(function(){if(localStorage.getItem('portfolio-theme')==='dark')document.documentElement.setAttribute('data-theme','dark');})();</script>
 </head>
 <body>
 <header><div class="nav-inner wrap">
-  <a href="index.php" class="logo"><?php echo escape_html($profile['full_name']); ?></a>
+  <a href="index.php" class="logo"><?php echo $siteLogo !== '' ? '<img src="' . escape_html($siteLogo) . '" alt="' . escape_html($siteTitle) . '" style="max-height:42px">' : escape_html($profile['full_name']); ?></a>
   <nav id="main-nav"><ul>
     <li><a href="index.php" class="nav-link active">Home</a></li><li><a href="about.php" class="nav-link">About</a></li>
     <li><a href="skills.php" class="nav-link">Skills</a></li><li><a href="projects.php" class="nav-link">Projects</a></li>
