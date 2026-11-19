@@ -1,5 +1,4 @@
-# Keep legacy static-page URLs routed to the PHP-backed pages, including when
-# this project is installed inside a subdirectory such as /portfolio/.
+# Keep legacy static-page URLs working while public content is served by PHP.
 DirectoryIndex index.php index.html
 
 <IfModule mod_rewrite.c>
@@ -7,16 +6,17 @@ DirectoryIndex index.php index.html
     RewriteRule ^(index|about|skills|projects|resume|contact)\.html$ $1.php [R=301,L,NC]
 </IfModule>
 
-# Protect configuration, SQL exports, and repository metadata from web access.
-<FilesMatch "^(\.git|\.env|composer\.(json|lock)|.*\.sql)$">
+<FilesMatch "(^\.git|\.env|composer\.(json|lock)|.*\.sql)$">
     Require all denied
 </FilesMatch>
 
-# Admin styles change frequently; avoid a stale browser/proxy copy.
 <IfModule mod_headers.c>
-    <Files "admin.css">
+    <Files "style.css">
         Header set Cache-Control "no-cache, no-store, must-revalidate"
         Header set Pragma "no-cache"
         Header set Expires "0"
+    </Files>
+    <Files "script.js">
+        Header set Cache-Control "no-cache, no-store, must-revalidate"
     </Files>
 </IfModule>
