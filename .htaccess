@@ -6,7 +6,7 @@ DirectoryIndex index.php index.html
     RewriteRule ^(index|about|skills|projects|resume|contact)\.html$ $1.php [R=301,L,NC]
 </IfModule>
 
-<FilesMatch "(^\.git|\.env|composer\.(json|lock)|.*\.sql)$">
+<FilesMatch "(^\.git|\.env|composer\.(json|lock)|.*\.sql|config\.local\.php)$">
     Require all denied
 </FilesMatch>
 

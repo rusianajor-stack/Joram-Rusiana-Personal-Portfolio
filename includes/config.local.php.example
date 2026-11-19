@@ -7,4 +7,5 @@ return [
     'DB_NAME' => 'if0_XXXX_portfolio',
     'DB_USER' => 'if0_XXXX',
     'DB_PASSWORD' => '',
+    'ADMIN_SETUP_KEY' => 'replace-with-a-long-random-private-key',
 ];
