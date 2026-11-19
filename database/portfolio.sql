@@ -121,27 +121,66 @@ VALUES
 ('site_logo', '')
 ON DUPLICATE KEY UPDATE setting_key = setting_key;
 
-INSERT INTO education (institution, qualification, details, start_date, end_date, sort_order) VALUES
-('Negros Oriental State University – Bayawan–Sta. Catalina Campus', 'Bachelor of Science in Information Technology (BSIT)', 'Currently pursuing a Bachelor of Science in Information Technology.', '2024-08-01', NULL, 1),
-('Basay National High School', 'Secondary Education', 'Completed secondary education.', '2018-06-01', '2024-04-30', 2);
+INSERT INTO education (institution, qualification, details, start_date, end_date, sort_order)
+SELECT 'Negros Oriental State University – Bayawan–Sta. Catalina Campus', 'Bachelor of Science in Information Technology (BSIT)', 'Currently pursuing a Bachelor of Science in Information Technology.', '2024-08-01', NULL, 1
+WHERE NOT EXISTS (SELECT 1 FROM education WHERE institution = 'Negros Oriental State University – Bayawan–Sta. Catalina Campus');
 
-INSERT INTO experience (title, organization, details, start_date, end_date, sort_order) VALUES
-('ITS 300 — Web Development Coursework', 'Negros Oriental State University', 'Built portfolio and web development projects using HTML, CSS, JavaScript, PHP, and MySQL.', '2024-08-01', NULL, 1),
-('Database Management Coursework', 'Negros Oriental State University', 'Practiced database design and SQL queries as part of the BSIT curriculum.', '2024-08-01', NULL, 2),
-('Adobe Animate Workshops', 'Negros Oriental State University', 'Practiced squash-and-stretch, slow-in/slow-out, motion paths, and animation projects.', '2024-08-01', NULL, 3);
+INSERT INTO education (institution, qualification, details, start_date, end_date, sort_order)
+SELECT 'Basay National High School', 'Secondary Education', 'Completed secondary education.', '2018-06-01', '2024-04-30', 2
+WHERE NOT EXISTS (SELECT 1 FROM education WHERE institution = 'Basay National High School');
 
-INSERT INTO skills (name, category, description, level_label, level_percent, sort_order) VALUES
-('HTML & CSS', 'Web Development', 'Building structured, styled web pages with clean layouts and responsive designs.', 'Proficient', 70, 1),
-('C++', 'Programming', 'Applied for high-performance programming, problem-solving, and efficient memory management.', 'Proficient', 70, 2),
-('SQL / MySQL', 'Database', 'Organizing, querying, and handling data retrieval for databases.', 'Intermediate', 50, 3),
-('Java', 'Programming', 'Fundamental knowledge of object-oriented programming concepts.', 'Basic', 35, 4),
-('JavaScript', 'Web Development', 'Adding interactivity and dynamic behavior to web pages.', 'Beginner', 30, 5),
-('Adobe Animate', 'Animation', 'Creating digital animations, interactive content, and multimedia advertisements.', 'Proficient', 70, 6),
-('Git & GitHub', 'Tools', 'Version control and hosting projects.', 'Intermediate', 50, 7)
-ON DUPLICATE KEY UPDATE name = name;
+INSERT INTO experience (title, organization, details, start_date, end_date, sort_order)
+SELECT 'ITS 300 — Web Development Coursework', 'Negros Oriental State University', 'Built portfolio and web development projects using HTML, CSS, JavaScript, PHP, and MySQL.', '2024-08-01', NULL, 1
+WHERE NOT EXISTS (SELECT 1 FROM experience WHERE title = 'ITS 300 — Web Development Coursework');
 
-INSERT INTO projects (title, description, technologies, image_path, sort_order) VALUES
-('Electronic Vehicular Incident Report System', 'A web-based system for reporting vehicular incidents, with photo uploads, location information, report verification, maps, and an admin dashboard.', 'HTML, CSS, JavaScript, MySQL', 'images/project-evirs.svg', 1),
-('Animation Projects', 'Animation activities made with Adobe Animate, including Squash and Stretch and Slow In / Slow Out.', 'Adobe Animate, ActionScript', 'images/project-animation.svg', 2),
-('Personal Website', 'A desktop-linked web application for managing barangay records, including document requests, blotter entries, announcements, and reports.', 'HTML, CSS', 'images/project-website.jpg', 3),
-('FOKUS Cold Brew Energy', 'A short animated advertisement made in Adobe Animate, using motion tweens and timing to promote a sample product.', 'Adobe Animate, ActionScript', 'images/project-ad-animation.svg', 4);
+INSERT INTO experience (title, organization, details, start_date, end_date, sort_order)
+SELECT 'Database Management Coursework', 'Negros Oriental State University', 'Practiced database design and SQL queries as part of the BSIT curriculum.', '2024-08-01', NULL, 2
+WHERE NOT EXISTS (SELECT 1 FROM experience WHERE title = 'Database Management Coursework');
+
+INSERT INTO experience (title, organization, details, start_date, end_date, sort_order)
+SELECT 'Adobe Animate Workshops', 'Negros Oriental State University', 'Practiced squash-and-stretch, slow-in/slow-out, motion paths, and animation projects.', '2024-08-01', NULL, 3
+WHERE NOT EXISTS (SELECT 1 FROM experience WHERE title = 'Adobe Animate Workshops');
+
+INSERT INTO skills (name, category, description, level_label, level_percent, sort_order)
+SELECT 'HTML & CSS', 'Web Development', 'Building structured, styled web pages with clean layouts and responsive designs.', 'Proficient', 70, 1
+WHERE NOT EXISTS (SELECT 1 FROM skills WHERE name = 'HTML & CSS');
+
+INSERT INTO skills (name, category, description, level_label, level_percent, sort_order)
+SELECT 'C++', 'Programming', 'Applied for high-performance programming, problem-solving, and efficient memory management.', 'Proficient', 70, 2
+WHERE NOT EXISTS (SELECT 1 FROM skills WHERE name = 'C++');
+
+INSERT INTO skills (name, category, description, level_label, level_percent, sort_order)
+SELECT 'SQL / MySQL', 'Database', 'Organizing, querying, and handling data retrieval for databases.', 'Intermediate', 50, 3
+WHERE NOT EXISTS (SELECT 1 FROM skills WHERE name = 'SQL / MySQL');
+
+INSERT INTO skills (name, category, description, level_label, level_percent, sort_order)
+SELECT 'Java', 'Programming', 'Fundamental knowledge of object-oriented programming concepts.', 'Basic', 35, 4
+WHERE NOT EXISTS (SELECT 1 FROM skills WHERE name = 'Java');
+
+INSERT INTO skills (name, category, description, level_label, level_percent, sort_order)
+SELECT 'JavaScript', 'Web Development', 'Adding interactivity and dynamic behavior to web pages.', 'Beginner', 30, 5
+WHERE NOT EXISTS (SELECT 1 FROM skills WHERE name = 'JavaScript');
+
+INSERT INTO skills (name, category, description, level_label, level_percent, sort_order)
+SELECT 'Adobe Animate', 'Animation', 'Creating digital animations, interactive content, and multimedia advertisements.', 'Proficient', 70, 6
+WHERE NOT EXISTS (SELECT 1 FROM skills WHERE name = 'Adobe Animate');
+
+INSERT INTO skills (name, category, description, level_label, level_percent, sort_order)
+SELECT 'Git & GitHub', 'Tools', 'Version control and hosting projects.', 'Intermediate', 50, 7
+WHERE NOT EXISTS (SELECT 1 FROM skills WHERE name = 'Git & GitHub');
+
+INSERT INTO projects (title, description, technologies, image_path, sort_order)
+SELECT 'Electronic Vehicular Incident Report System', 'A web-based system for reporting vehicular incidents, with photo uploads, location information, report verification, maps, and an admin dashboard.', 'HTML, CSS, JavaScript, MySQL', 'images/project-evirs.svg', 1
+WHERE NOT EXISTS (SELECT 1 FROM projects WHERE title = 'Electronic Vehicular Incident Report System');
+
+INSERT INTO projects (title, description, technologies, image_path, sort_order)
+SELECT 'Animation Projects', 'Animation activities made with Adobe Animate, including Squash and Stretch and Slow In / Slow Out.', 'Adobe Animate, ActionScript', 'images/project-animation.svg', 2
+WHERE NOT EXISTS (SELECT 1 FROM projects WHERE title = 'Animation Projects');
+
+INSERT INTO projects (title, description, technologies, image_path, sort_order)
+SELECT 'Personal Website', 'A desktop-linked web application for managing barangay records, including document requests, blotter entries, announcements, and reports.', 'HTML, CSS', 'images/project-website.jpg', 3
+WHERE NOT EXISTS (SELECT 1 FROM projects WHERE title = 'Personal Website');
+
+INSERT INTO projects (title, description, technologies, image_path, sort_order)
+SELECT 'FOKUS Cold Brew Energy', 'A short animated advertisement made in Adobe Animate, using motion tweens and timing to promote a sample product.', 'Adobe Animate, ActionScript', 'images/project-ad-animation.svg', 4
+WHERE NOT EXISTS (SELECT 1 FROM projects WHERE title = 'FOKUS Cold Brew Energy');

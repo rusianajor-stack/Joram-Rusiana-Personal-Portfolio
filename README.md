@@ -30,11 +30,10 @@ Dynamic PHP/MySQL personal portfolio with an authenticated administrator dashboa
 3. Copy `includes/config.local.php.example` to `includes/config.local.php` and use the InfinityFree database hostname, database name, username, and password.
 4. Set `ADMIN_SETUP_KEY` to a unique private random string of at least 24 characters.
 5. Import `database/portfolio.sql` with phpMyAdmin.
-6. Open `/admin/setup.php`, enter the setup key, and create the first administrator account.
-7. After setup succeeds, remove `ADMIN_SETUP_KEY` from `includes/config.local.php` and delete `admin/setup.php`.
-8. Keep PHP execution disabled in `uploads/` using the included `.htaccess` file.
-9. Point the hosting document root to the repository directory or upload this directory as the website root.
-10. Sign in at `/admin/login.php`.
+6. Upload `uploads/.htaccess` and keep the `uploads/profile`, `uploads/projects`, and `uploads/achievements` directories.
+7. Open `/admin/setup.php`, enter the setup key, and create the first administrator account.
+8. After setup succeeds, remove `ADMIN_SETUP_KEY` from `includes/config.local.php` and delete `admin/setup.php`.
+9. Sign in at `/admin/login.php`.
 
 ## Administrator setup
 

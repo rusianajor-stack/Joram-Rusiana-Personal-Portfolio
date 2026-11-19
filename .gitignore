@@ -5,4 +5,10 @@ config.local.php
 /vendor/
 /uploads/*
 !/uploads/.gitkeep
+!/uploads/profile/
+!/uploads/profile/.gitkeep
+!/uploads/projects/
+!/uploads/projects/.gitkeep
+!/uploads/achievements/
+!/uploads/achievements/.gitkeep
 includes/config.local.php
